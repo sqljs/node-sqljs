@@ -17,7 +17,7 @@
   },
   "main": "./lib/sqljs",
   "scripts": {
-    "test": "nodeunit tests"
+    "test": "make test"
   },
   "dependencies": {
     "pegjs": "0.7.x"
