@@ -20,7 +20,8 @@
     "sqljs": "./bin/sqljs"
   },
   "scripts": {
-    "test": "make test"
+    "test": "make test",
+    "postinstall": "make all"
   },
   "dependencies": {
     "pegjs": "0.7.x",
