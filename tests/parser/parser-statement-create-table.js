@@ -47,6 +47,16 @@ var result5 = [
   }
 ];
 
+var result6 = [
+  {
+    statement: 'CREATE TABLE',
+    schema: 'schema',
+    table: 'table',
+    temporary: true,
+    columns: []
+  }
+];
+
 exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null, 
   undefined, [
     [
@@ -97,6 +107,9 @@ exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null,
     ], [
       'CREATE TABLE table( col1 not null int, )', 
       result5
+    ], [
+      'CREATE TEMP TABLE schema.table ()', 
+      result6
     ]
   ], 'deepEqual'
 );
