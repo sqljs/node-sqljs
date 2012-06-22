@@ -1,4 +1,4 @@
-GRAMMAR_FILES = $(shell find ./lib/grammar/*.pegjs | sort)
+GRAMMAR_FILES = $(shell find ./grammar/*.pegjs | sort)
 
 CAT=cat
 RM=rm -f
