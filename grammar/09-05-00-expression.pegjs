@@ -6,9 +6,9 @@
 // http://dev.mysql.com/doc/refman/5.6/en/operator-precedence.html
 
 EXPRESSION
-  = ASSIGN_EXPR
+  = expr:ASSIGN_EXPR { return options.onExpression(expr); }
 
-ASSIGN_EXPR // := assignment, can be simly '=' but here i avoid it
+ASSIGN_EXPR // := assignment, can be simly '=' in some cases but here i avoid it
   = left:LOGICALOR_EXPR tail:( _ ':=' _ expr:LOGICALOR_EXPR { return expr; } )+ {
       tail.unshift(left);
       return {
@@ -21,39 +21,39 @@ ASSIGN_EXPR // := assignment, can be simly '=' but here i avoid it
 LOGICALOR_EXPR // ||, OR
   = left:LOGICALXOR_EXPR tail:( _ ('||'/'OR'i) _ expr:LOGICALXOR_EXPR { return expr; } )+ {
       tail.unshift(left);
-      return {
+      return options.onOrExpression({
         operator: "OR",
         expressions: tail
-      };
+      });
     }
   / LOGICALXOR_EXPR
 
 LOGICALXOR_EXPR // XOR
   = left:LOGICALAND_EXPR tail:( _ 'XOR'i _ expr:LOGICALXOR_EXPR { return expr; } )+ {
       tail.unshift(left);
-      return {
+      return options.onXorExpression({
         operator: "XOR",
         expressions: tail
-      };
+      });
     }
   / LOGICALAND_EXPR
 
 LOGICALAND_EXPR // &&, AND
   = left:LOGICALNOT_EXPR tail:( _ ('&&'/'AND'i) _ expr:LOGICALNOT_EXPR { return expr; } )+ {
       tail.unshift(left);
-      return {
+      return options.onAndExpression({
         operator: "AND",
         expressions: tail
-      };
+      });
     }
   / LOGICALNOT_EXPR
 
 LOGICALNOT_EXPR // NOT
   = "NOT"i __ expr:COND_EXPR {
-      return {
+      return options.onNotExpression({
         operator: "NOT",
         expression: expr
-      };
+      });
     }
   / COND_EXPR 
 
@@ -62,40 +62,51 @@ COND_EXPR // BETWEEN, CASE, WHEN, THEN, ELSE
   = COMPARISON_EXPR
 
 COMPARISON_EXPR // = (comparison), <=>, >=, >, <=, <, <>, !=, IS, LIKE, REGEXP, IN
-  = left:BITOR_EXPR tail:( _ 
-      op:('='/'<=>'/'>='/'>'/'<='/'<'/'<>'/'!='/'IS'i/'LIKE'i/'REGEXP'i/'IN'i) _ 
+  = expr:BITOR_EXPR _ "IS" _ 
+      not:"NOT"i? _ 
+      val:("TRUE"i / "FALSE"i / "UNKNOWN"i / "NULL"i)
+    {
+      return options.onIsExpression({
+        unary: 'IS',
+        not: !!not,
+        value: val.toUpperCase(),
+        expression: expr
+      });
+    }
+  / left:BITOR_EXPR tail:( _ 
+      op:('='/'<=>'/'>='/'>'/'<='/'<'/'<>'/'!='/'LIKE'i/'REGEXP'i/'IN'i) _ 
       val:BITOR_EXPR { return [op, val]; })+
     {
       var exprs = [left];
       var operators = [];
       tail.forEach(function(val){
-        exprs.push(val[0]); // operator
-        operators.push(val[1]); // expression
+        operators.push(val[0]); // operator
+        exprs.push(val[1]); // expression
       });
-      return {
+      return options.onComparisonExpression({
         operators: operators,
         expressions: exprs
-      };
+      });
     }
   / BITOR_EXPR
 
 BITOR_EXPR // |
   = left:BITAND_EXPR tail:( _ '|' _ expr:BITAND_EXPR { return expr; } )+ {
       tail.unshift(left);
-      return {
+      return options.onBitwiseOrExpression({
         operator: "|",
         expressions: tail
-      };
+      });
     }
   / BITAND_EXPR
 
 BITAND_EXPR // &
   = left:BITSHIFT_EXPR tail:( _ '&' _ expr:BITSHIFT_EXPR { return expr; } )+ {
       tail.unshift(left);
-      return {
+      return options.onBitwiseAndExpression({
         operator: "&",
         expressions: tail
-      };
+      });
     }
   / BITSHIFT_EXPR
 
@@ -104,13 +115,13 @@ BITSHIFT_EXPR // <<, >>
       var exprs = [left];
       var operators = [];
       tail.forEach(function(val){
-        exprs.push(val[0]); // operator
-        operators.push(val[1]); // expression
+        operators.push(val[0]); // operator
+        exprs.push(val[1]); // expression
       });
-      return {
+      return options.onBitShiftExpression({
         operators: operators,
         expressions: exprs
-      };
+      });
     }
   / ADD_EXPR
 
@@ -119,145 +130,98 @@ ADD_EXPR // +, -
       var exprs = [left];
       var operators = [];
       tail.forEach(function(val){
-        exprs.push(val[0]); // operator
-        operators.push(val[1]); // expression
+        operators.push(val[0]); // operator
+        exprs.push(val[1]); // expression
       });
-      return {
+      return options.onAddExpression({
         operators: operators,
         expressions: exprs
-      };
+      });
     }
   / MULT_EXPR
 
 MULT_EXPR // *, /, DIV, %, MOD
   = left:BITXOR_EXPR tail:( _ 
-      op:('*'/'/'/'DIV'i/'%'/'MOD'i) _ 
+      op:('*' / '/' / 'DIV'i / '%' / 'MOD'i) _ 
       val:BITXOR_EXPR { return [op, val]; } )+ 
     {
       var exprs = [left];
       var operators = [];
       tail.forEach(function(val){
-        exprs.push(val[0]); // operator
-        operators.push(val[1]); // expression
+        operators.push(val[0]); // operator
+        exprs.push(val[1]); // expression
       });
-      return {
+      return options.onMulDivExpression({
         operators: operators,
         expressions: exprs
-      };
+      });
     }
   / BITXOR_EXPR
 
 BITXOR_EXPR // ^
   = left:UNARY_EXPR tail:( _ '^' _ expr:UNARY_EXPR { return expr; } )+ {
       tail.unshift(left);
-      return {
+      return options.onBitwiseXorExpression({
         operator: "^",
         expressions: tail
-      };
+      });
     }
   / UNARY_EXPR
 
-UNARY_EXPR // - (unary minus), ~ (unary bit inversion)
+UNARY_EXPR // - (unary minus), ~ (unary bit inversion), + (unary plus)
   = op:('-'/'~'/'+') _ expr:UNARY_EXPR {
-      return {
+      return options.onUnaryExpression({
         unary: op,
         expression: expr
-      };
+      });
     } 
   / HIGH_NOT_EXPR
 
 HIGH_NOT_EXPR // !
   = '!' _ expr:HIGH_NOT_EXPR {
-      return {
+      return options.onNotExpression({
         unary: '!',
         expression: expr
-      };
+      });
     } 
   / STRING_COLLATE_EXPR
 
 STRING_COLLATE_EXPR // COLLATE
-  // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-  = STRING_BINARY_EXPR
+  = expr:STRING_BINARY_EXPR _ "COLLATE"i __ collation:COLLATION_NAME {
+      return options.onCollateExpression({
+        unary: 'COLLATE',
+        collation: collation,
+        expression: expr
+      });
+    }
+  / STRING_BINARY_EXPR
+
+
+COLLATION_NAME "collation name"
+  = ID
+  / STRING
+
 
 STRING_BINARY_EXPR // BINARY MODIFIER
-  // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-  = INTERVAL_EXPR
+  = "BINARY"i _ expr:INTERVAL_EXPR {
+      return options.onModifierBinaryExpression({
+        unary: 'BINARY',
+        expression: expr
+      });
+    }
+  / INTERVAL_EXPR
 
 INTERVAL_EXPR
   // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
   = PRIMARY_EXPR
 
 PRIMARY_EXPR
-  // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
   = CONSTANT_VALUE
   / "(" expr:EXPRESSION ")" { return expr; }
 
-/*
-    expr OR expr
-  | expr || expr
-  | expr XOR expr
-  | expr AND expr
-  | expr && expr
-  | NOT expr
-  | ! expr
-  | boolean_primary IS [NOT] {TRUE | FALSE | UNKNOWN}
-  | boolean_primary
 
-boolean_primary:
-    boolean_primary IS [NOT] NULL
-  | boolean_primary <=> predicate
-  | boolean_primary comparison_operator predicate
-  | boolean_primary comparison_operator {ALL | ANY} (subquery)
-  | predicate
+CONSTANT_EXPRESSION "constant expression"
+  // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+  // this is helper for evaluating expressions from constant values to constant value
+  = CONSTANT_VALUE
 
-comparison_operator: = | >= | > | <= | < | <> | !=
-
-predicate:
-    bit_expr [NOT] IN (subquery)
-  | bit_expr [NOT] IN (expr [, expr] ...)
-  | bit_expr [NOT] BETWEEN bit_expr AND predicate
-  | bit_expr SOUNDS LIKE bit_expr
-  | bit_expr [NOT] LIKE simple_expr [ESCAPE simple_expr]
-  | bit_expr [NOT] REGEXP bit_expr
-  | bit_expr
-
-bit_expr:
-    bit_expr | bit_expr
-  | bit_expr & bit_expr
-  | bit_expr << bit_expr
-  | bit_expr >> bit_expr
-  | bit_expr + bit_expr
-  | bit_expr - bit_expr
-  | bit_expr * bit_expr
-  | bit_expr / bit_expr
-  | bit_expr DIV bit_expr
-  | bit_expr MOD bit_expr
-  | bit_expr % bit_expr
-  | bit_expr ^ bit_expr
-  | bit_expr + interval_expr
-  | bit_expr - interval_expr
-  | simple_expr
-
-simple_expr:
-    literal
-  | identifier
-  | function_call
-  | simple_expr COLLATE collation_name
-  | param_marker
-  | variable
-  | simple_expr || simple_expr
-  | + simple_expr
-  | - simple_expr
-  | ~ simple_expr
-  | ! simple_expr
-  | BINARY simple_expr
-  | (expr [, expr] ...)
-  | ROW (expr, expr [, expr] ...)
-  | (subquery)
-  | EXISTS (subquery)
-  | {identifier expr}
-  | match_expr
-  | case_expr
-  | interval_expr
-
-*/

@@ -31,14 +31,15 @@ module.exports = function(rule_name, values, test_method, test) {
     if(expected === Error || expected === SyntaxError || expected === sqljs.SyntaxError) {
       test.throws(function() { 
         actual = sqljs.parse(input, rule_name, opts); 
-      }, expected, "Parser input: '"+input+"'");
+      }, function(err) {
+        return err instanceof expected;
+      }, "Parser input: '"+input+"'");
     } else {
       try {
         actual = sqljs.parse(input, rule_name, opts); 
         test_method.call(test, actual, expected, "Parser input: '"+input+"'");
       } catch(err) {
-        test.ok(false, "Unexpected exception");
-        console.log(sqljs.prettyError(err, input, true));
+        test.ok(false, "Exception: " + sqljs.prettyError(err, input, true));
       }
     }      
 
