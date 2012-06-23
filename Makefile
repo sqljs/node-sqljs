@@ -20,3 +20,6 @@ test: all
 
 ./lib/sqljs-parser.js: ./lib/sqljs-parser.pegjs
 	$(PEGJS) ./lib/sqljs-parser.pegjs ./lib/sqljs-parser.js || $(RM) ./lib/sqljs-parser.js
+
+.PHONY: all clean test
+
