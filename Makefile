@@ -16,7 +16,7 @@ test: all
 	$(NODEUNIT) ./tests/*
 
 ./lib/sqljs-parser.pegjs: $(GRAMMAR_FILES)
-	$(CAT) $(GRAMMAR_FILES) > ./lib/sqljs-parser.pegjs
+	$(CAT) $(GRAMMAR_FILES) > ./lib/sqljs-parser.pegjs || $(RM) ./lib/sqljs-parser.pegjs
 
 ./lib/sqljs-parser.js: ./lib/sqljs-parser.pegjs
-	$(PEGJS) ./lib/sqljs-parser.pegjs ./lib/sqljs-parser.js 
+	$(PEGJS) ./lib/sqljs-parser.pegjs ./lib/sqljs-parser.js || $(RM) ./lib/sqljs-parser.js
