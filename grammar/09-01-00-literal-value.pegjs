@@ -4,7 +4,7 @@
 
 
 CONSTANT_VALUE
-  = val:NULL _                  { return val; }
-  / val:BOOLEAN _               { return val; }
-  / val:STRING _                { return val; }
-  / val:POSITIVE_NUMBER _       { return val; }
+  = val:NULL                    { return val; }
+  / val:BOOLEAN                 { return val; }
+  / val:STRING                  { return val; }
+  / val:POSITIVE_NUMBER         { return val; }

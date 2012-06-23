@@ -4,10 +4,10 @@
 
 
 STRING "string"
-  = _ str:SINGLE_STRING+ { return str.join(''); }
+  = str:SINGLE_STRING+ { return str.join(''); }
 
 
-SINGLE_STRING
+SINGLE_STRING "string"
   = '"' chars:chars_no_quot '"' _ { return chars; }
   / "'" chars:chars_no_apos "'" _ { return chars; }
 

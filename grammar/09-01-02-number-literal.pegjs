@@ -4,7 +4,7 @@
 
 
 SIGNED_NUMBER "number"
-  = _ sign:NUMBER_SIGN _ val:POSITIVE_NUMBER _ { return val*sign; }
+  = sign:NUMBER_SIGN _ val:POSITIVE_NUMBER { return val*sign; }
 
 
 NUMBER_SIGN
@@ -18,15 +18,15 @@ POSITIVE_NUMBER "number"
 
 
 POSITIVE_FLOAT "float"
-  = val:FloatLiteral { return parseFloat(val); }
+  = val:FloatLiteral _ { return parseFloat(val); }
 
 
 POSITIVE_INTEGER "integer"
   = & { return options.ALLOW_OCTAL_NOTATION || options.OCTAL_AS_DECIMAL; } 
-    "0" octal:[0-7]+ { return parseInt('0'+octal.join(''), options.OCTAL_AS_DECIMAL ? 10 : 8); }
-  / "0x"i hex:[0-9A-Fa-f]+ { return parseInt(hex.join(''), 16); }
-  / "0b"i bin:[01]+ { return parseInt(bin.join(''), 2); }
-  / dec:DecimalLiteral { return parseInt(dec, 10); }
+    "0" octal:[0-7]+ _ { return parseInt('0'+octal.join(''), options.OCTAL_AS_DECIMAL ? 10 : 8); }
+  / "0x"i hex:[0-9A-Fa-f]+ _ { return parseInt(hex.join(''), 16); }
+  / "0b"i bin:[01]+ _ { return parseInt(bin.join(''), 2); }
+  / dec:DecimalLiteral _ { return parseInt(dec, 10); }
 
 
 FloatLiteral

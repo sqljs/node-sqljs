@@ -4,6 +4,6 @@
 
 
 BOOLEAN
-  = 'TRUE'i { return options.BOOLEAN_VALUE_TRUE; }
-  / 'FALSE'i { return options.BOOLEAN_VALUE_FALSE; }
+  = 'TRUE'i _ { return options.BOOLEAN_VALUE_TRUE; }
+  / 'FALSE'i _ { return options.BOOLEAN_VALUE_FALSE; }
 
