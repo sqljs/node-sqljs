@@ -3,7 +3,7 @@
 // http://dev.mysql.com/doc/refman/5.6/en/boolean-literals.html
 
 
-BOOLEAN
+BOOLEAN "boolean"
   = 'TRUE'i _ { return options.BOOLEAN_VALUE_TRUE; }
   / 'FALSE'i _ { return options.BOOLEAN_VALUE_FALSE; }
 

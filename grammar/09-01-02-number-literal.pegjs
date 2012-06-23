@@ -4,12 +4,12 @@
 
 
 SIGNED_NUMBER "number"
-  = sign:NUMBER_SIGN _ val:POSITIVE_NUMBER { return val*sign; }
+  = sign:NUMBER_SIGN val:POSITIVE_NUMBER { return val*sign; }
 
 
 NUMBER_SIGN
-  = "-" { return -1; }
-  / "+"? { return 1; }
+  = "-" _ { return -1; }
+  / "+"? _ { return 1; }
 
 
 POSITIVE_NUMBER "number"
