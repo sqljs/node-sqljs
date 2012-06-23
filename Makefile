@@ -13,7 +13,7 @@ clean:
 	$(RM) ./lib/sqljs-parser.js
 
 test: all
-	$(NODEUNIT) ./tests/*
+	$(NODEUNIT) --reporter minimal ./tests/*
 
 ./lib/sqljs-parser.pegjs: $(GRAMMAR_FILES)
 	$(CAT) $(GRAMMAR_FILES) > ./lib/sqljs-parser.pegjs || $(RM) ./lib/sqljs-parser.pegjs

@@ -6,10 +6,10 @@
 // http://dev.mysql.com/doc/refman/5.6/en/operator-precedence.html
 
 EXPRESSION
-  = expr:ASSIGN_EXPR { return options.onExpression(expr); }
+  = _ expr:ASSIGN_EXPR { return options.onExpression(expr); }
 
 ASSIGN_EXPR // := assignment, can be simly '=' in some cases but here i avoid it
-  = left:LOGICALOR_EXPR tail:( _ ':=' _ expr:LOGICALOR_EXPR { return expr; } )+ {
+  = left:LOGICALOR_EXPR tail:( ':=' _ expr:LOGICALOR_EXPR { return expr; } )+ {
       tail.unshift(left);
       return {
         operator: "ASSIGN",
@@ -19,7 +19,7 @@ ASSIGN_EXPR // := assignment, can be simly '=' in some cases but here i avoid it
   / LOGICALOR_EXPR
 
 LOGICALOR_EXPR // ||, OR
-  = left:LOGICALXOR_EXPR tail:( _ ('||'/'OR'i) _ expr:LOGICALXOR_EXPR { return expr; } )+ {
+  = left:LOGICALXOR_EXPR tail:( ('||'/'OR'i) _ expr:LOGICALXOR_EXPR { return expr; } )+ {
       tail.unshift(left);
       return options.onOrExpression({
         operator: "OR",
@@ -29,7 +29,7 @@ LOGICALOR_EXPR // ||, OR
   / LOGICALXOR_EXPR
 
 LOGICALXOR_EXPR // XOR
-  = left:LOGICALAND_EXPR tail:( _ 'XOR'i _ expr:LOGICALXOR_EXPR { return expr; } )+ {
+  = left:LOGICALAND_EXPR tail:( 'XOR'i _ expr:LOGICALXOR_EXPR { return expr; } )+ {
       tail.unshift(left);
       return options.onXorExpression({
         operator: "XOR",
@@ -39,7 +39,7 @@ LOGICALXOR_EXPR // XOR
   / LOGICALAND_EXPR
 
 LOGICALAND_EXPR // &&, AND
-  = left:LOGICALNOT_EXPR tail:( _ ('&&'/'AND'i) _ expr:LOGICALNOT_EXPR { return expr; } )+ {
+  = left:LOGICALNOT_EXPR tail:( ('&&'/'AND'i) _ expr:LOGICALNOT_EXPR { return expr; } )+ {
       tail.unshift(left);
       return options.onAndExpression({
         operator: "AND",
@@ -62,9 +62,9 @@ COND_EXPR // BETWEEN, CASE, WHEN, THEN, ELSE
   = COMPARISON_EXPR
 
 COMPARISON_EXPR // = (comparison), <=>, >=, >, <=, <, <>, !=, IS, LIKE, REGEXP, IN
-  = expr:BITOR_EXPR _ "IS" _ 
+  = expr:BITOR_EXPR "IS" _ 
       not:"NOT"i? _ 
-      val:("TRUE"i / "FALSE"i / "UNKNOWN"i / "NULL"i)
+      val:("TRUE"i / "FALSE"i / "UNKNOWN"i / "NULL"i) _
     {
       return options.onIsExpression({
         unary: 'IS',
@@ -73,7 +73,7 @@ COMPARISON_EXPR // = (comparison), <=>, >=, >, <=, <, <>, !=, IS, LIKE, REGEXP, 
         expression: expr
       });
     }
-  / left:BITOR_EXPR tail:( _ 
+  / left:BITOR_EXPR tail:(
       op:('='/'<=>'/'>='/'>'/'<='/'<'/'<>'/'!='/'LIKE'i/'REGEXP'i/'IN'i) _ 
       val:BITOR_EXPR { return [op, val]; })+
     {
@@ -91,7 +91,7 @@ COMPARISON_EXPR // = (comparison), <=>, >=, >, <=, <, <>, !=, IS, LIKE, REGEXP, 
   / BITOR_EXPR
 
 BITOR_EXPR // |
-  = left:BITAND_EXPR tail:( _ '|' _ expr:BITAND_EXPR { return expr; } )+ {
+  = left:BITAND_EXPR tail:( '|' _ expr:BITAND_EXPR { return expr; } )+ {
       tail.unshift(left);
       return options.onBitwiseOrExpression({
         operator: "|",
@@ -101,7 +101,7 @@ BITOR_EXPR // |
   / BITAND_EXPR
 
 BITAND_EXPR // &
-  = left:BITSHIFT_EXPR tail:( _ '&' _ expr:BITSHIFT_EXPR { return expr; } )+ {
+  = left:BITSHIFT_EXPR tail:( '&' _ expr:BITSHIFT_EXPR { return expr; } )+ {
       tail.unshift(left);
       return options.onBitwiseAndExpression({
         operator: "&",
@@ -111,7 +111,7 @@ BITAND_EXPR // &
   / BITSHIFT_EXPR
 
 BITSHIFT_EXPR // <<, >>
-  = left:ADD_EXPR tail:( _ op:('<<'/'>>') _ val:ADD_EXPR { return [op, val]; } )+ {
+  = left:ADD_EXPR tail:( op:('<<'/'>>') _ val:ADD_EXPR { return [op, val]; } )+ {
       var exprs = [left];
       var operators = [];
       tail.forEach(function(val){
@@ -126,7 +126,7 @@ BITSHIFT_EXPR // <<, >>
   / ADD_EXPR
 
 ADD_EXPR // +, -
-  = left:MULT_EXPR tail:( _ op:('+'/'-') _ val:MULT_EXPR { return [op, val]; } )+ {
+  = left:MULT_EXPR tail:( op:('+'/'-') _ val:MULT_EXPR { return [op, val]; } )+ {
       var exprs = [left];
       var operators = [];
       tail.forEach(function(val){
@@ -141,7 +141,7 @@ ADD_EXPR // +, -
   / MULT_EXPR
 
 MULT_EXPR // *, /, DIV, %, MOD
-  = left:BITXOR_EXPR tail:( _ 
+  = left:BITXOR_EXPR tail:( 
       op:('*' / '/' / 'DIV'i / '%' / 'MOD'i) _ 
       val:BITXOR_EXPR { return [op, val]; } )+ 
     {
@@ -159,7 +159,7 @@ MULT_EXPR // *, /, DIV, %, MOD
   / BITXOR_EXPR
 
 BITXOR_EXPR // ^
-  = left:UNARY_EXPR tail:( _ '^' _ expr:UNARY_EXPR { return expr; } )+ {
+  = left:UNARY_EXPR tail:( '^' _ expr:UNARY_EXPR { return expr; } )+ {
       tail.unshift(left);
       return options.onBitwiseXorExpression({
         operator: "^",
@@ -169,7 +169,7 @@ BITXOR_EXPR // ^
   / UNARY_EXPR
 
 UNARY_EXPR // - (unary minus), ~ (unary bit inversion), + (unary plus)
-  = op:('-'/'~'/'+') _ expr:UNARY_EXPR {
+  = op:('~' / '+' / '-') _ expr:UNARY_EXPR {
       return options.onUnaryExpression({
         unary: op,
         expression: expr
@@ -187,7 +187,7 @@ HIGH_NOT_EXPR // !
   / STRING_COLLATE_EXPR
 
 STRING_COLLATE_EXPR // COLLATE
-  = expr:STRING_BINARY_EXPR _ "COLLATE"i __ collation:COLLATION_NAME {
+  = expr:STRING_BINARY_EXPR "COLLATE"i _ collation:COLLATION_NAME {
       return options.onCollateExpression({
         unary: 'COLLATE',
         collation: collation,
@@ -203,7 +203,7 @@ COLLATION_NAME "collation name"
 
 
 STRING_BINARY_EXPR // BINARY MODIFIER
-  = "BINARY"i _ expr:INTERVAL_EXPR {
+  = "BINARY"i __ expr:INTERVAL_EXPR {
       return options.onModifierBinaryExpression({
         unary: 'BINARY',
         expression: expr

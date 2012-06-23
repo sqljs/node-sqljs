@@ -33,8 +33,9 @@ exports['Grammar: Expression: add'] = rule_yields.bind(null,
     ['1+2-3+4-5', { operators: [ '+', '-', '+', '-' ], expressions: [ 1, 2, 3, 4, 5 ] }], 
     ['1+-2', { operators: [ '+' ], expressions: [ 1, { unary: '-', expression: 2 } ] }], 
     ['1-+2', { operators: [ '-' ], expressions: [ 1, { unary: '+', expression: 2 } ] }], 
-    //['1++2', { operators: [ '+' ], expressions: [ 1, { unary: '+', expression: 2 } ] }], 
-    //['1--2', { operators: [ '-' ], expressions: [ 1, { unary: '-', expression: 2 } ] }], 
+    ['1++2', { operators: [ '+' ], expressions: [ 1, { unary: '+', expression: 2 } ] }], 
+    ['1- -2', { operators: [ '-' ], expressions: [ 1, { unary: '-', expression: 2 } ] }], 
+    [' 1 - - 2 ', { operators: [ '-' ], expressions: [ 1, { unary: '-', expression: 2 } ] }], 
   ],
   'deepEqual'
 );
