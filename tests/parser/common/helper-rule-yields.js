@@ -1,6 +1,5 @@
 
-var parser = require('../../../lib/sqljs-parser');
-
+var sqljs = require('../../../.');
 
 
 module.exports = function(rule_name, values, test_method, test) {
@@ -15,7 +14,7 @@ module.exports = function(rule_name, values, test_method, test) {
   if(typeof test_method === 'string')
     test_method = test[test_method];
 
-  test.expect(values.length * 2);
+  test.expect(values.length);
   values.forEach(function(vals){
     var input, actual, expected, opts;
     if(Array.isArray(vals)) {
@@ -29,17 +28,18 @@ module.exports = function(rule_name, values, test_method, test) {
 
     actual = null;
     
-    if(expected === Error || expected === SyntaxError || expected === parser.SyntaxError) {
+    if(expected === Error || expected === SyntaxError || expected === sqljs.SyntaxError) {
       test.throws(function() { 
-        actual = parser.parse(input, rule_name, opts); 
+        actual = sqljs.parse(input, rule_name, opts); 
       }, expected, "Parser input: '"+input+"'");
-      test.ok(true); // fake - to count
     } else {
-      test.doesNotThrow(function() { 
-        actual = parser.parse(input, rule_name, opts); 
-      }, parser.SyntaxError, "Parser input: '"+input+"'");
-
-      test_method.call(test, actual, expected, "Parser input: '"+input+"'");
+      try {
+        actual = sqljs.parse(input, rule_name, opts); 
+        test_method.call(test, actual, expected, "Parser input: '"+input+"'");
+      } catch(err) {
+        test.ok(false, "Unexpected exception");
+        console.log(sqljs.prettyError(err, input, true));
+      }
     }      
 
   });
