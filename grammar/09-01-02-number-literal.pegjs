@@ -30,20 +30,22 @@ POSITIVE_INTEGER "integer"
 
 
 FloatLiteral
-  = base:[0-9]+ frac:([.] frac:[0-9]* {return '.'+ frac.join('')})?
-      exp:([eE] sign:[+-]? exp:[0-9]+ { return 'e' + sign + exp.join(); })
+  = base:[0-9]+ 
+      frac:([\.] frac:[0-9]* {return '.'+ frac.join('')})?
+      exp:([eE] sign:[+-]? exp:[0-9]+ { return 'e' + sign + exp.join(''); })
     {
       return base.join('') + frac + exp; 
     }
-  / base:[0-9]+ [.] frac:(frac:[0-9]* {return '.'+ frac.join('')})?
-      exp:([eE] sign:[+-]? exp:[0-9]+ { return 'e' + sign + exp.join(); })?
+  / base:[0-9]+
+      [\.] frac:(frac:[0-9]* {return frac.join('')})?
+      exp:([eE] sign:[+-]? exp:[0-9]+ { return 'e' + sign + exp.join(''); })?
     {
-      return base.join('') + frac + exp; 
+      return base.join('') + '.' + frac + exp; 
     }
-  / [.] frac:[0-9]+ 
-      exp:([eE] sign:[+-]? exp:[0-9]+ { return 'e' + sign + exp.join(); })? 
+  / [\.] frac:[0-9]+ 
+      exp:([eE] sign:[+-]? exp:[0-9]+ { return 'e' + sign + exp.join(''); })? 
     {
-      return '0.'+ frac.join('') + exp; 
+      return '0.' + frac.join('') + exp; 
     }
 
 
