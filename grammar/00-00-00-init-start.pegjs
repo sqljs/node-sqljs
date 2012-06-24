@@ -66,6 +66,25 @@
   // handles BINARY <expr> modifier
   defineExpressionEvent('onModifierBinaryExpression');
 
+
+  function safeMergeObject(target, src, resolveCallback) {
+    for(var name in src) {
+      if(typeof target[name] === 'undefined') {
+        target[name] = src[name];
+      } else {
+        var result;
+        if(resolveCallback) {
+          result = resolveCallback(name, target[name], src[name]);
+          if(typeof result === 'undefined')
+            throw new Error('Ambiguous property '+name);
+          target[name] = result;
+        } else {
+          throw new Error('Ambiguous property '+name);
+        }
+      }
+    }
+  }
+
 }
 
 

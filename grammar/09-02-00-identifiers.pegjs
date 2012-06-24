@@ -3,6 +3,10 @@
 // http://dev.mysql.com/doc/refman/5.6/en/identifiers.html
 
 
+DATABASE_NAME "database name"
+  = schema:ID { return schema }
+
+
 TABLE_NAME "table name"
   = schema:ID '.' name:ID {
       return { schema: schema, table: name };

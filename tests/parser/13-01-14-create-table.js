@@ -7,7 +7,7 @@ var result1 = [
     statement: 'CREATE TABLE',
     schema: undefined,
     table: 'table',
-    columns: []
+    definitions: []
   }
 ];
 
@@ -16,7 +16,7 @@ var result2 = [
     statement: 'CREATE TABLE',
     schema: undefined,
     table: 'table',
-    columns: [ { name: 'col1' } ]
+    definitions: [ { name: 'col1' } ]
   }
 ];
 
@@ -25,7 +25,7 @@ var result3 = [
     statement: 'CREATE TABLE',
     schema: undefined,
     table: 'table',
-    columns: [ { notNull: false, name: 'col1' } ]
+    definitions: [ { notNull: false, name: 'col1' } ]
   }
 ];
 
@@ -34,7 +34,7 @@ var result4 = [
     statement: 'CREATE TABLE',
     schema: undefined,
     table: 'table',
-    columns: [ { notNull: true, name: 'col1' } ]
+    definitions: [ { notNull: true, name: 'col1' } ]
   }
 ];
 
@@ -43,7 +43,7 @@ var result5 = [
     statement: 'CREATE TABLE',
     schema: undefined,
     table: 'table',
-    columns: [ { notNull: true, type: 'INT', name: 'col1' } ]
+    definitions: [ { notNull: true, type: 'INT', name: 'col1' } ]
   }
 ];
 
@@ -53,7 +53,7 @@ var result6 = [
     schema: 'schema',
     table: 'table',
     temporary: true,
-    columns: []
+    definitions: []
   }
 ];
 
@@ -110,6 +110,16 @@ exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null,
     ], [
       'CREATE TEMP TABLE schema.table ()', 
       result6
+    ], [
+      'CREATE TEMP TABLE schema.table IF NOT EXISTS ()', 
+      [{
+        statement: 'CREATE TABLE',
+        schema: 'schema',
+        table: 'table',
+        temporary: true,
+        definitions: [],
+        ifNotExists: true
+      }]
     ]
   ], 'deepEqual'
 );
