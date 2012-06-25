@@ -13,7 +13,8 @@ CREATE_TABLE
     { 
       safeMergeObject(props, props1);
       safeMergeObject(props, props2);
-      props.statement = "CREATE TABLE";
+      props.statement = "CREATE"; 
+      props.what = "TABLE";
       props.schema = table.schema;
       props.table = table.table;
       if(temp) props.temporary = true;
@@ -120,7 +121,7 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       props.type = type.toUpperCase();
       return props;      
     }
-  / _ "NOT"i _ "NULL"i props:COLUMN_TYPE_PROPERTIES {
+  / _ "NOT"i _ "NULL"i _ props:COLUMN_TYPE_PROPERTIES {
       if(typeof props.notNull !== 'undefined')
         throw new Error('NULL or NOT NULL?');
       props.notNull=true;
@@ -132,15 +133,15 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       props.notNull=false;
       return props;
     }
-  / _ "PRIMARY"i (_ "KEY"i)? props:COLUMN_TYPE_PROPERTIES {
+  / _ "PRIMARY"i (_ "KEY"i)? _ props:COLUMN_TYPE_PROPERTIES {
       props.primaryKey=true;
       return props;
     }
-  / _ "UNIQ"i "UE"i? props:COLUMN_TYPE_PROPERTIES {
+  / _ "UNIQ"i "UE"i? _ props:COLUMN_TYPE_PROPERTIES {
       props.unique=true;
       return props;
     }
-  / _ "AUTO"i ( "_" / _ )"INC"i "REMENT"i? props:COLUMN_TYPE_PROPERTIES {
+  / _ "AUTO"i ( "_" / _ )"INC"i "REMENT"i? _ props:COLUMN_TYPE_PROPERTIES {
       props.autoIncrement=true;
       return props;
     }
@@ -152,7 +153,7 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       props.default = 'CURRENT_TIMESTAMP';
       return props;
     }
-  / _ "COMMENT"i ( _ "=" _ / __ )  comment:STRING props:COLUMN_TYPE_PROPERTIES {
+  / _ "COMMENT"i ( _ "=" _ / __ ) comment:STRING props:COLUMN_TYPE_PROPERTIES {
       props.comment = comment;
       return props;
     }

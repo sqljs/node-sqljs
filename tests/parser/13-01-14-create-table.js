@@ -4,7 +4,8 @@ var rule_yields = require('./common/helper-rule-yields');
 
 var result1 = [
   {
-    statement: 'CREATE TABLE',
+    statement: 'CREATE',
+    what: 'TABLE',
     schema: undefined,
     table: 'table',
     definitions: []
@@ -13,7 +14,8 @@ var result1 = [
 
 var result2 = [
   {
-    statement: 'CREATE TABLE',
+    statement: 'CREATE',
+    what: 'TABLE',
     schema: undefined,
     table: 'table',
     definitions: [ { name: 'col1' } ]
@@ -22,7 +24,8 @@ var result2 = [
 
 var result3 = [
   {
-    statement: 'CREATE TABLE',
+    statement: 'CREATE',
+    what: 'TABLE',
     schema: undefined,
     table: 'table',
     definitions: [ { notNull: false, name: 'col1' } ]
@@ -31,7 +34,8 @@ var result3 = [
 
 var result4 = [
   {
-    statement: 'CREATE TABLE',
+    statement: 'CREATE',
+    what: 'TABLE',
     schema: undefined,
     table: 'table',
     definitions: [ { notNull: true, name: 'col1' } ]
@@ -40,7 +44,8 @@ var result4 = [
 
 var result5 = [
   {
-    statement: 'CREATE TABLE',
+    statement: 'CREATE',
+    what: 'TABLE',
     schema: undefined,
     table: 'table',
     definitions: [ { notNull: true, type: 'INT', name: 'col1' } ]
@@ -49,7 +54,8 @@ var result5 = [
 
 var result6 = [
   {
-    statement: 'CREATE TABLE',
+    statement: 'CREATE',
+    what: 'TABLE',
     schema: 'schema',
     table: 'table',
     temporary: true,
@@ -113,7 +119,8 @@ exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null,
     ], [
       'CREATE TEMP TABLE schema.table IF NOT EXISTS ()', 
       [{
-        statement: 'CREATE TABLE',
+        statement: 'CREATE',
+        what: 'TABLE',
         schema: 'schema',
         table: 'table',
         temporary: true,

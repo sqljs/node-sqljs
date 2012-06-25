@@ -17,17 +17,26 @@ module.exports = function(rule_name, values, test_method, test) {
   test.expect(values.length);
   values.forEach(function(vals){
     var input, actual, expected, opts;
+
+    opts = new sqljs.ParseOptions();
+
     if(Array.isArray(vals)) {
       input = vals[0];
       expected = vals[1];
-      opts = vals[2] || {};
+      if(vals[2]) {
+        if(vals[2].isParseOptions) {
+          opts = vals[2];
+        } else {
+          for(var key in vals[2])
+            opts[key] = vals[2][key];
+        }
+      }
     } else {
       input = expected = vals;
-      opts = {};
     }
 
     actual = null;
-    
+
     if(expected === Error || expected === SyntaxError || expected === sqljs.SyntaxError) {
       test.throws(function() { 
         actual = sqljs.parse(input, rule_name, opts); 
