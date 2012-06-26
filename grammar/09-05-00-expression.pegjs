@@ -239,7 +239,8 @@ PRIMARY_EXPR
 
 
 CONSTANT_VALUE
-  = val:NULL                    { return val; }
-  / val:BOOLEAN                 { return val; }
-  / val:STRING                  { return val; }
-  / val:POSITIVE_NUMBER         { return val; }
+  = NULL
+  / BOOLEAN
+  / STRING
+  / POSITIVE_NUMBER
+  / CURRENT_TIMESTAMP

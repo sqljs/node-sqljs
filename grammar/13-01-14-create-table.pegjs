@@ -66,12 +66,45 @@ CREATE_DEFINITION
 
 
 CREATE_DEFINITION_CONSTRAINT
-  = "PRIMARY"i _ ("KEY"i _ )? "(" _ id_list:ID_LIST ")" {
-      return { type: "CONSTRAINT", constraint: "PRIMARY KEY", columns: id_list };
+  = "PRIMARY"i _ ("KEY"i _ )? "(" _ idlist:ID_LIST ")" _ {
+      return { type: "CONSTRAINT", constraint: "PRIMARY KEY", columns: idlist };
+    }
+  / unique:("UNIQUE"i __)? type:("KEY"i/"INDEX"i) 
+      name:(__ name:(ID/STRING) {return name;})? _ "(" _ idlist:ID_LIST ")" _ 
+    {
+      var key = {
+        type: "CONSTRAINT",
+        constraint: type.toUpperCase(),
+        unique: !!unique,
+        columns: idlist
+      };
+      if(name)
+        key.name = name;
+      return key;
     }
 
+/*
+  | [CONSTRAINT [symbol]] PRIMARY KEY [index_type] (index_col_name,...)
+      [index_option] ...
+  | {INDEX|KEY} [index_name] [index_type] (index_col_name,...)
+      [index_option] ...
+  | [CONSTRAINT [symbol]] UNIQUE [INDEX|KEY]
+      [index_name] [index_type] (index_col_name,...)
+      [index_option] ...
+  | {FULLTEXT|SPATIAL} [INDEX|KEY] [index_name] (index_col_name,...)
+      [index_option] ...
+  | [CONSTRAINT [symbol]] FOREIGN KEY
+      [index_name] (index_col_name,...) reference_definition
+  | CHECK (expr)
+*/
+
+
+
 ID_LIST
-  = id:ID _ rest:(',' _ id2:ID _ { return id2; }) { rest.unshift(id); return rest; }
+  = id:ID _ rest:(',' _ id2:ID _ { return id2; })* { rest.unshift(id); return rest; }
+
+STRING_ID_LIST
+  = id:(STRING/ID) _ rest:(',' _ id2:(STRING/ID) _ { return id2; })* { rest.unshift(id); return rest; }
 
 
 NUMERIC_TYPE_LENGTH
@@ -134,6 +167,13 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       props.type = type.toUpperCase();
       return props;      
     }
+  / _ "ENUM"i _ "(" values:STRING_ID_LIST ")" _ props:COLUMN_TYPE_PROPERTIES {
+      if(props.type)
+        throw new SyntaxError("Ambiguous type");
+      props.type = 'ENUM';
+      props.values = values;
+      return props;
+    }
   / _ "NOT"i _ "NULL"i _ props:COLUMN_TYPE_PROPERTIES {
       if(typeof props.notNull !== 'undefined')
         throw new Error('NULL or NOT NULL?');
@@ -156,6 +196,12 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
     }
   / _ "AUTO"i ( "_" / _ )"INC"i "REMENT"i? _ props:COLUMN_TYPE_PROPERTIES {
       props.autoIncrement=true;
+      return props;
+    }
+  / _ "COLLAT"i ("E"i/"ION"i) (_ "=" _ / __) 
+      collate:COLLATION_NAME _ props:COLUMN_TYPE_PROPERTIES
+    {
+      props.collate = collate;
       return props;
     }
   / _ "DEFAULT"i __ value:CONSTANT_EXPRESSION props:COLUMN_TYPE_PROPERTIES {
