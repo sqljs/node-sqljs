@@ -5,10 +5,10 @@
 CREATE_TABLE
   = ("CREATE"i __)? 
       temp:("TEMP"i "ORARY"i? _)? "TABLE"i __ 
-      props1:TABLE_PROPERTIES 
+      props1:TABLE_PROPERTIES _
       table:TABLE_NAME _ 
       props2:TABLE_PROPERTIES 
-      '(' columns:CREATE_DEFINITIONS ')' 
+      '(' columns:CREATE_DEFINITIONS ')' _
       props:TABLE_PROPERTIES 
     { 
       safeMergeObject(props, props1);
@@ -25,14 +25,14 @@ CREATE_TABLE
 
 TABLE_PROPERTIES
   = ("DEFAULT"i __)? "CHAR"i "ACTER"i? (_/"_") "SET"i (_ "=" _ / __)
-      charset:ID
+      charset:ID _
       props:TABLE_PROPERTIES
     {
       props.charset = charset;
       return props;
     }
   / ("DEFAULT"i __)? "COLLAT"i ("E"i/"ION"i) (_ "=" _ / __) 
-      collate:COLLATION_NAME 
+      collate:COLLATION_NAME _ 
       props:TABLE_PROPERTIES 
     {
       props.collate = collate;
@@ -46,6 +46,10 @@ TABLE_PROPERTIES
       props.ifNotExists = true;
       return props;
     }
+  / "ENGINE"i (_ '=' _ / __) name:(ID/STRING) _ props:TABLE_PROPERTIES {
+      props.engine = name;
+      return props;
+    }
   / _ { return {}; }
 
 
@@ -57,8 +61,17 @@ CREATE_DEFINITIONS
 
 
 CREATE_DEFINITION
-  = name:ID _ props:COLUMN_TYPE_PROPERTIES { props.name = name; return props; }
+  = CREATE_DEFINITION_CONSTRAINT
+  / name:ID _ props:COLUMN_TYPE_PROPERTIES { props.name = name; return props; }
 
+
+CREATE_DEFINITION_CONSTRAINT
+  = "PRIMARY"i _ ("KEY"i _ )? "(" _ id_list:ID_LIST ")" {
+      return { type: "CONSTRAINT", constraint: "PRIMARY KEY", columns: id_list };
+    }
+
+ID_LIST
+  = id:ID _ rest:(',' _ id2:ID _ { return id2; }) { rest.unshift(id); return rest; }
 
 
 NUMERIC_TYPE_LENGTH
