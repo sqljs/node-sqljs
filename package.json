@@ -1,6 +1,6 @@
 {
   "name": "sqljs",
-  "version": "0.0.0-2alpha1",
+  "version": "0.0.0-2alpha2",
   "description": "SQL parser",
   "keywords": [
     "database",
