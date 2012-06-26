@@ -1,6 +1,6 @@
 {
   var options = arguments[2];
-  if(!options.isParseOptions)
+  if(!(options && options.isParseOptions))
     throw new Error("Parser require ParseOptions instance as 3rd argument");
 
   function safeMergeObject(target, src, resolveCallback) {

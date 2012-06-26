@@ -3,5 +3,5 @@
 // http://dev.mysql.com/doc/refman/5.6/en/null-values.html
 
 NULL "NULL"
-  = ("NULL"i / "\N") _ { return options.NULL_VALUE; }
+  = ("NULL"i / "\N") _ { return options.createValueNull(); }
 

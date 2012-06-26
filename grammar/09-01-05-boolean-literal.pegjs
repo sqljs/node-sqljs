@@ -4,6 +4,6 @@
 
 
 BOOLEAN "boolean"
-  = 'TRUE'i _ { return options.BOOLEAN_VALUE_TRUE; }
-  / 'FALSE'i _ { return options.BOOLEAN_VALUE_FALSE; }
+  = 'TRUE'i _ { return options.createValueTrue(); }
+  / 'FALSE'i _ { return options.createValueFalse(); }
 
