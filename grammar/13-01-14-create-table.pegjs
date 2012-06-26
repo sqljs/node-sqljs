@@ -5,9 +5,9 @@
 CREATE_TABLE
   = ("CREATE"i __)? 
       temp:("TEMP"i "ORARY"i? _)? "TABLE"i __ 
-      props1:TABLE_PROPERTIES _
+      props1:TABLE_PROPERTIES
       table:TABLE_NAME _ 
-      props2:TABLE_PROPERTIES 
+      props2:TABLE_PROPERTIES
       '(' columns:CREATE_DEFINITIONS ')' _
       props:TABLE_PROPERTIES 
     { 
