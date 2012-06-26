@@ -3,7 +3,7 @@ GRAMMAR_FILES = $(shell find ./grammar/*.pegjs | sort)
 CAT=cat
 RM=rm -f
 NODE=node
-PEGJS=./node_modules/pegjs/bin/pegjs
+PEGJS=./node_modules/pegjs/bin/pegjs --cache 
 NODEUNIT=./node_modules/nodeunit/bin/nodeunit
 
 all: ./lib/sqljs-parser.pegjs ./lib/sqljs-parser.js
