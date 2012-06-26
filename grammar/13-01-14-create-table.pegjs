@@ -50,6 +50,10 @@ TABLE_PROPERTIES
       props.engine = name;
       return props;
     }
+  / "AUTO"i ("_"/_)? "INC"i "REMENT"i _ (_ '=' _ / __) value:CONSTANT_EXPRESSION _ props:TABLE_PROPERTIES {
+      props.autoIncrement = value;
+      return props;
+    }
   / _ { return {}; }
 
 
@@ -66,8 +70,42 @@ CREATE_DEFINITION
 
 
 CREATE_DEFINITION_CONSTRAINT
-  = "PRIMARY"i _ ("KEY"i _ )? "(" _ idlist:ID_LIST ")" _ {
-      return { type: "CONSTRAINT", constraint: "PRIMARY KEY", columns: idlist };
+  = constraint_name:CONSTRAINT_NAME_OPT "PRIMARY"i _ ("KEY"i _ )? 
+      "(" _ idlist:ID_LIST ")" _ 
+    {
+      return { 
+        type: "CONSTRAINT", 
+        constraint: "PRIMARY KEY", 
+        constraintName:constraint_name, 
+        columns: idlist
+      };
+    }
+  / constraint_name:CONSTRAINT_NAME_OPT "FOREIGN"i _ ("KEY"i _ )? 
+      idx_name:(name:(ID/STRING) _ )?
+      "(" _ idlist:ID_LIST ")" _
+      ref:REFERENCE_DEFINITION
+    {
+      return { 
+        type: "CONSTRAINT", 
+        constraint: "FOREIGN KEY", 
+        constraintName:constraint_name,
+        indexName:idx_name,
+        columns: idlist,
+        references: ref
+      };
+    }
+  / "UNIQUE"i __ type:("KEY"i/"INDEX"i)?
+      name:(__ name:(ID/STRING) {return name;})? _ "(" _ idlist:ID_LIST ")" _ 
+    {
+      var key = {
+        type: "CONSTRAINT",
+        constraint: (type ? type.toUpperCase() : 'INDEX'),
+        unique: true,
+        columns: idlist
+      };
+      if(name)
+        key.name = name;
+      return key;
     }
   / unique:("UNIQUE"i __)? type:("KEY"i/"INDEX"i) 
       name:(__ name:(ID/STRING) {return name;})? _ "(" _ idlist:ID_LIST ")" _ 
@@ -83,6 +121,11 @@ CREATE_DEFINITION_CONSTRAINT
       return key;
     }
 
+CONSTRAINT_NAME_OPT
+  = "CONSTRAINT"i __ !("PRIMARY"i/"FOREIGN"i/"KEY"i/"INDEX"i/"UNIQUE"i) name:(ID/STRING) _ { return name; }
+  / "CONSTRAINT"i __ { return true; }
+  / { }
+
 /*
   | [CONSTRAINT [symbol]] PRIMARY KEY [index_type] (index_col_name,...)
       [index_option] ...
@@ -97,7 +140,6 @@ CREATE_DEFINITION_CONSTRAINT
       [index_name] (index_col_name,...) reference_definition
   | CHECK (expr)
 */
-
 
 
 ID_LIST
