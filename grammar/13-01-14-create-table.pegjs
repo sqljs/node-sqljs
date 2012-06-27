@@ -59,12 +59,12 @@ TABLE_PROPERTIES
 
 
 CREATE_DEFINITIONS
-  = _ col:CREATE_DEFINITION _ ',' cols:CREATE_DEFINITIONS { cols.unshift(col); return cols; }
-  / _ col:CREATE_DEFINITION _ { return [col]; }
+  = _ col:CREATE_DEFINITION cols:(_ ',' _ col:CREATE_DEFINITION { return col; })* _ (',' _)*
+    { cols.unshift(col); return cols; }
   / _ { return []; }
 
 
-CREATE_DEFINITION
+CREATE_DEFINITION "column create definition"
   = CREATE_DEFINITION_CONSTRAINT
   / name:ID _ props:COLUMN_TYPE_PROPERTIES { props.name = name; return props; }
 
@@ -168,7 +168,8 @@ TYPE_LENGTH
 
 COLUMN_TYPE_PROPERTIES "Column type properties"
   = _ prefix:("TINY"i/"SMALL"i/"MEDIUM"i/"BIG"i)? _ "INT"i "EGER"i? length:TYPE_LENGTH
-    props:COLUMN_TYPE_PROPERTIES {
+      props:COLUMN_TYPE_PROPERTIES 
+    {
       if(props.type)
         throw new SyntaxError("Ambiguous type");
       props.type = prefix ? prefix.toUpperCase()+'INT' : 'INT';
@@ -179,6 +180,14 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       if(props.type)
         throw new SyntaxError("Ambiguous type");
       props.type = 'DECIMAL';
+      if(length.length) props.length = length.length;
+      if(length.decimals) props.decimals = length.decimals;
+      return props;
+    }
+  / _ type:("DOUBLE"i / "FLOAT"i / "REAL"i) length:NUMERIC_TYPE_LENGTH props:COLUMN_TYPE_PROPERTIES {
+      if(props.type)
+        throw new SyntaxError("Ambiguous type");
+      props.type = type.toUpperCase();
       if(length.length) props.length = length.length;
       if(length.decimals) props.decimals = length.decimals;
       return props;
@@ -203,10 +212,13 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       props.type = typeof prefix !== 'undefined' ? prefix.toUpperCase()+'TEXT' : 'TEXT';
       return props;
     }
-  / _ type:("DATETIME"i/"DATE"i/"TIME"i/"TIMESTAMP"i/"YEAR"i) props:COLUMN_TYPE_PROPERTIES {
+  / _ type:("DATETIME"i/"DATE"i/"TIMESTAMP"i/"TIME"i/"YEAR"i) length:TYPE_LENGTH _ 
+        props:COLUMN_TYPE_PROPERTIES 
+    {
       if(props.type)
         throw new SyntaxError("Ambiguous type");
       props.type = type.toUpperCase();
+      if(length) props.length = length;
       return props;      
     }
   / _ "ENUM"i _ "(" values:STRING_ID_LIST ")" _ props:COLUMN_TYPE_PROPERTIES {
@@ -216,6 +228,14 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       props.values = values;
       return props;
     }
+  / _ "UNSIGNED"i _ props:COLUMN_TYPE_PROPERTIES {
+        props.unsigned=true;
+        return props; 
+      }
+  / _ "SIGNED"i _ props:COLUMN_TYPE_PROPERTIES {
+        props.signed=true;
+        return props; 
+      }
   / _ "NOT"i _ "NULL"i _ props:COLUMN_TYPE_PROPERTIES {
       if(typeof props.notNull !== 'undefined')
         throw new Error('NULL or NOT NULL?');
@@ -252,6 +272,10 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
     }
   / _ "DEFAULT"i __ CURRENT_TIMESTAMP props:COLUMN_TYPE_PROPERTIES {
       props.default = 'CURRENT_TIMESTAMP';
+      return props;
+    }
+  / _ "ON"i _ "UPDATE"i _ val:CURRENT_TIMESTAMP _ props:COLUMN_TYPE_PROPERTIES {
+      props.onUpdate = val;
       return props;
     }
   / _ "COMMENT"i ( _ "=" _ / __ ) comment:STRING props:COLUMN_TYPE_PROPERTIES {
