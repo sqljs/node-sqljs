@@ -4,7 +4,7 @@
 
 
 STATEMENTS
-  = _ first:STATEMENT _ statements:((';' _)+ stmt:STATEMENT { return stmt; })* _ (';' _)* {
+  = _ (';' _)* first:STATEMENT _ statements:((';' _)+ stmt:STATEMENT { return stmt; })* _ (';' _)* {
       statements.unshift(first); return statements;
     }
   / _ { return []; }
