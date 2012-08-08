@@ -176,7 +176,7 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       if(length) props.length = length;
       return props;
     }
-  / _ ("NUM"i ("ERIC"i/"BER"i)? / "DECIMAL"i) length:NUMERIC_TYPE_LENGTH props:COLUMN_TYPE_PROPERTIES {
+  / _ ("NUM"i ("ERIC"i/"BER"i)? / "DEC"i "IMAL"i?) length:NUMERIC_TYPE_LENGTH props:COLUMN_TYPE_PROPERTIES {
       if(props.type)
         throw new SyntaxError("Ambiguous type");
       props.type = 'DECIMAL';

@@ -4,7 +4,7 @@
 CURRENT_TIMESTAMP
   = ( "CURRENT_TIMESTAMP"i
       / "CURRENT"i _ "TIMESTAMP"i
-      / "NOW"i (_ "()")? ) 
+      / "NOW"i (_ "()" )? ) 
     {
       return options.createValueCurrentTimestamp();
     }
