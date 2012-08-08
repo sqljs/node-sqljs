@@ -29,7 +29,8 @@
     "colors": "0.6.x"
   },
   "devDependencies": {
-    "nodeunit": "*"
+    "nodeunit": "*",
+    "browserify": "*"
   },
   "optionalDependencies": {},
   "engines": {
