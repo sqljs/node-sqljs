@@ -1,4 +1,3 @@
-lib/sqljs-parser.js
 lib/sqljs-parser.pegjs
 
 lib-cov
