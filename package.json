@@ -1,6 +1,6 @@
 {
   "name": "sqljs",
-  "version": "0.0.0-2alpha3",
+  "version": "0.0.0-2alpha4",
   "description": "SQL parser",
   "keywords": [
     "database",
@@ -20,8 +20,7 @@
     "sqljs": "./bin/sqljs"
   },
   "scripts": {
-    "test": "make test",
-    "postinstall": "make all"
+    "test": "make test"
   },
   "dependencies": {
     "pegjs": "0.7.x",
