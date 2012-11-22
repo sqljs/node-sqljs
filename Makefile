@@ -16,7 +16,7 @@ clean:
 	$(RM) ./lib/sqljs-parser.js
 	$(RM) ./examples/browser/demo.browserified.js
 
-test: all
+test:
 	$(NODEUNIT) --reporter minimal ./tests/*
 
 ./lib/sqljs-parser.pegjs: $(GRAMMAR_FILES)
