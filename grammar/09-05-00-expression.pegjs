@@ -1,9 +1,9 @@
 
 // 9.5. Expression Syntax
-// http://dev.mysql.com/doc/refman/5.6/en/expressions.html
+// http://dev.mysql.com/doc/refman/5.7/en/expressions.html
 
 // 12.3.1. Operator Precedence
-// http://dev.mysql.com/doc/refman/5.6/en/operator-precedence.html
+// http://dev.mysql.com/doc/refman/5.7/en/operator-precedence.html
 
 // this is actually an extension
 CONSTANT_EXPRESSION "constant expression"

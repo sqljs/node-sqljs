@@ -1,6 +1,6 @@
 
 // 9.1.5. Boolean Literals
-// http://dev.mysql.com/doc/refman/5.6/en/boolean-literals.html
+// http://dev.mysql.com/doc/refman/5.7/en/boolean-literals.html
 
 
 BOOLEAN "boolean"

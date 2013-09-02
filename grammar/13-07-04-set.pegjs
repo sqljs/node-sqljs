@@ -4,7 +4,7 @@
 
 // TODO: multiple set assignments
 
-SET_STATEMENT "SET statement"
+SET_STATEMENT "SET"
   = "SET"i __ variable:ID ( _ "=" _ / __) value:(ID / STRING) {
       return {
         statement: "SET",

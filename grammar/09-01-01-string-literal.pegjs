@@ -1,6 +1,6 @@
 
 // 9.1.1. String Literals
-// http://dev.mysql.com/doc/refman/5.6/en/string-literals.html
+// http://dev.mysql.com/doc/refman/5.7/en/string-literals.html
 
 
 STRING "string"

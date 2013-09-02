@@ -1,6 +1,6 @@
 
 // 9.1.2. Number Literals
-// http://dev.mysql.com/doc/refman/5.6/en/number-literals.html
+// http://dev.mysql.com/doc/refman/5.7/en/number-literals.html
 
 
 SIGNED_NUMBER "number"

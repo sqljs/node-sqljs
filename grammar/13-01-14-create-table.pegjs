@@ -1,6 +1,6 @@
 
 // 13.1.14. CREATE TABLE Syntax
-// http://dev.mysql.com/doc/refman/5.6/en/create-table.html
+// http://dev.mysql.com/doc/refman/5.7/en/create-table.html
 
 CREATE_TABLE
   = ("CREATE"i __)? 

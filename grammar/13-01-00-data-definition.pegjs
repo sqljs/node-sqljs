@@ -1,12 +1,11 @@
 
 // 13.1. Data Definition Statements
-// http://dev.mysql.com/doc/refman/5.6/en/sql-syntax-data-definition.html
+// http://dev.mysql.com/doc/refman/5.7/en/sql-syntax-data-definition.html
 
 DATA_DEFINITION_STATEMENT
   = SET_STATEMENT
   / CREATE_STATEMENT
-  / ALTER_DATABASE
-  / ALTER_TABLE
+  / ALTER_STATEMENT
   / DROP_STATEMENT
 
 
@@ -17,3 +16,6 @@ CREATE_STATEMENT "CREATE"
   / CREATE_TABLE
 
 
+ALTER_STATEMENT "ALTER"
+  = ALTER_DATABASE
+  / ALTER_TABLE

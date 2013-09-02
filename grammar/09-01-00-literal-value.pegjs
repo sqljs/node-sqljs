@@ -1,5 +1,5 @@
 
 // 9.1. Literal Values
-// http://dev.mysql.com/doc/refman/5.6/en/literals.html
+// http://dev.mysql.com/doc/refman/5.7/en/literals.html
 
 

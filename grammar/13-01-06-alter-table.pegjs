@@ -1,6 +1,7 @@
 
 // 13.1.6. ALTER TABLE Syntax
-// http://dev.mysql.com/doc/refman/5.6/en/alter-table.html
+// http://dev.mysql.com/doc/refman/5.7/en/alter-table.html
+
 
 ALTER_TABLE
   = "ALTER"i __ ignore:("IGNORE"i __)? "TABLE"i _ name:TABLE_NAME _ specifications:ALTER_TABLE_SPECIFICATIONS

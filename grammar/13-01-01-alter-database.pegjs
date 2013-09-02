@@ -1,6 +1,6 @@
 
 // 13.1.1. ALTER DATABASE Syntax
-// http://dev.mysql.com/doc/refman/5.6/en/alter-database.html
+// http://dev.mysql.com/doc/refman/5.7/en/alter-database.html
 
 
 ALTER_DATABASE

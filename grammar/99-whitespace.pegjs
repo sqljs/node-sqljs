@@ -13,10 +13,10 @@ multiLineComment
   = "/*" (!"*/" .)* "*/"
 
 _ "whitespace"
-  = (whitespace / eol / comment)*
+  = (eol / whitespace / comment)*
 
 __ "whitespace"
-  = (whitespace / eol / comment)+
+  = (eol / whitespace / comment)+
 
 eol 
   = "\n"

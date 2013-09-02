@@ -1,6 +1,6 @@
 {
   "name": "sqljs",
-  "version": "0.0.0-2alpha4",
+  "version": "0.0.0-2alpha5",
   "description": "SQL parser",
   "keywords": [
     "database",
@@ -23,9 +23,9 @@
     "test": "make test"
   },
   "dependencies": {
-    "pegjs": "0.7.x",
-    "commander": "0.6.x",
-    "colors": "0.6.x"
+    "pegjs": "~0.7.0",
+    "commander": "~2.0.0",
+    "colors": "~0.6.1"
   },
   "devDependencies": {
     "nodeunit": "*",

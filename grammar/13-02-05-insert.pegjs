@@ -28,7 +28,7 @@
 //         [, col_name=expr] ... ]
 
 
-INSERT_STATEMENT
+INSERT_STATEMENT "INSERT"
   = "INSERT"i priority:INSERT_PRIORITY ignore:INSERT_IGNORE
       (__ "INTO"i )? __ table:TABLE_NAME /* [PARTITION (partition_name,...)] */ _
       columns:INSERT_COLUMN_LIST
