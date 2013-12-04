@@ -63,6 +63,36 @@ var result6 = [
   }
 ];
 
+var result7 = [
+  {
+    statement: 'CREATE',
+    what: 'TABLE',
+    schema: undefined,
+    table: 'table',
+    definitions: [ { type: 'INT', name: 'col1' } ]
+  }
+];
+
+var result8 = [
+  {
+    statement: 'CREATE',
+    what: 'TABLE',
+    schema: undefined,
+    table: 'table',
+    definitions: [ { type: 'INT', name: 'col1' } ]
+  }
+];
+
+var result9 = [
+  {
+    statement: 'CREATE',
+    what: 'TABLE',
+    schema: undefined,
+    table: 'a b c',
+    definitions: [ { type: 'INT', name: 'x y z' } ]
+  }
+];
+
 exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null, 
   undefined, [
     [
@@ -127,6 +157,15 @@ exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null,
         definitions: [],
         ifNotExists: true
       }]
+    ], [
+      'CREATE TABLE table ("col1" integer);',
+      result7
+    ], [
+      'CREATE TABLE "table" (col1 integer)',
+      result8
+    ], [
+      'CREATE TABLE "a b c" ("x y z" integer)',
+      result9
     ]
   ], 'deepEqual'
 );
