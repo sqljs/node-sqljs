@@ -4,10 +4,11 @@
 
 
 CREATE_DATABASE "CREATE DATABASE"
-  = "CREATE"i __ what:("SCHEMA"i/"DATABASE"i) __ name:ID _ props:SCHEMA_PROPERTIES {
+  = "CREATE"i __ what:("SCHEMA"i/"DATABASE"i) _ exists:("IF"i _ "NOT"i _ "EXIST"i "S"i)? _ name:ID _ props:SCHEMA_PROPERTIES {
       props.statement = 'CREATE';
       props.what = what.toUpperCase();
       props.database = name;
+      if (exists.length > 0) props.ifNotExists = true;
       return props;
     }
 
@@ -29,10 +30,6 @@ SCHEMA_PROPERTIES "schema properties"
     }
   / "COMMENT"i (_ "=" _ / __) comment:(ID/STRING) _ props:SCHEMA_PROPERTIES {
       props.comment = comment;
-      return props;
-    }
-  / "IF"i _ "NOT"i _ "EXIST"i "S"i? _ props:SCHEMA_PROPERTIES {
-      props.ifNotExists = true;
       return props;
     }
   / _ { return {}; }

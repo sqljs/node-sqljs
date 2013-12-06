@@ -6194,8 +6194,8 @@ module.exports = (function(){
           return cachedResult.result;
         }
         
-        var result0, result1, result2, result3, result4, result5, result6;
-        var pos0, pos1;
+        var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9;
+        var pos0, pos1, pos2;
         
         reportFailures++;
         pos0 = pos;
@@ -6235,13 +6235,95 @@ module.exports = (function(){
             if (result2 !== null) {
               result3 = parse___();
               if (result3 !== null) {
-                result4 = parse_ID();
+                pos2 = pos;
+                if (input.substr(pos, 2).toLowerCase() === "if") {
+                  result4 = input.substr(pos, 2);
+                  pos += 2;
+                } else {
+                  result4 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("\"IF\"");
+                  }
+                }
                 if (result4 !== null) {
                   result5 = parse__();
                   if (result5 !== null) {
-                    result6 = parse_SCHEMA_PROPERTIES();
+                    if (input.substr(pos, 3).toLowerCase() === "not") {
+                      result6 = input.substr(pos, 3);
+                      pos += 3;
+                    } else {
+                      result6 = null;
+                      if (reportFailures === 0) {
+                        matchFailed("\"NOT\"");
+                      }
+                    }
                     if (result6 !== null) {
-                      result0 = [result0, result1, result2, result3, result4, result5, result6];
+                      result7 = parse__();
+                      if (result7 !== null) {
+                        if (input.substr(pos, 5).toLowerCase() === "exist") {
+                          result8 = input.substr(pos, 5);
+                          pos += 5;
+                        } else {
+                          result8 = null;
+                          if (reportFailures === 0) {
+                            matchFailed("\"EXIST\"");
+                          }
+                        }
+                        if (result8 !== null) {
+                          if (input.substr(pos, 1).toLowerCase() === "s") {
+                            result9 = input.substr(pos, 1);
+                            pos++;
+                          } else {
+                            result9 = null;
+                            if (reportFailures === 0) {
+                              matchFailed("\"S\"");
+                            }
+                          }
+                          if (result9 !== null) {
+                            result4 = [result4, result5, result6, result7, result8, result9];
+                          } else {
+                            result4 = null;
+                            pos = pos2;
+                          }
+                        } else {
+                          result4 = null;
+                          pos = pos2;
+                        }
+                      } else {
+                        result4 = null;
+                        pos = pos2;
+                      }
+                    } else {
+                      result4 = null;
+                      pos = pos2;
+                    }
+                  } else {
+                    result4 = null;
+                    pos = pos2;
+                  }
+                } else {
+                  result4 = null;
+                  pos = pos2;
+                }
+                result4 = result4 !== null ? result4 : "";
+                if (result4 !== null) {
+                  result5 = parse___();
+                  if (result5 !== null) {
+                    result6 = parse_ID();
+                    if (result6 !== null) {
+                      result7 = parse__();
+                      if (result7 !== null) {
+                        result8 = parse_SCHEMA_PROPERTIES();
+                        if (result8 !== null) {
+                          result0 = [result0, result1, result2, result3, result4, result5, result6, result7, result8];
+                        } else {
+                          result0 = null;
+                          pos = pos1;
+                        }
+                      } else {
+                        result0 = null;
+                        pos = pos1;
+                      }
                     } else {
                       result0 = null;
                       pos = pos1;
@@ -6271,12 +6353,13 @@ module.exports = (function(){
           pos = pos1;
         }
         if (result0 !== null) {
-          result0 = (function(offset, what, name, props) {
+          result0 = (function(offset, what, exists, name, props) {
               props.statement = 'CREATE';
               props.what = what.toUpperCase();
               props.database = name;
+              if (exists.length > 0) props.ifNotExist = true;
               return props;
-            })(pos0, result0[2], result0[4], result0[6]);
+            })(pos0, result0[2], result0[4], result0[6], result0[8]);
         }
         if (result0 === null) {
           pos = pos0;
@@ -6680,107 +6763,12 @@ module.exports = (function(){
             }
             if (result0 === null) {
               pos0 = pos;
-              pos1 = pos;
-              if (input.substr(pos, 2).toLowerCase() === "if") {
-                result0 = input.substr(pos, 2);
-                pos += 2;
-              } else {
-                result0 = null;
-                if (reportFailures === 0) {
-                  matchFailed("\"IF\"");
-                }
-              }
+              result0 = parse__();
               if (result0 !== null) {
-                result1 = parse__();
-                if (result1 !== null) {
-                  if (input.substr(pos, 3).toLowerCase() === "not") {
-                    result2 = input.substr(pos, 3);
-                    pos += 3;
-                  } else {
-                    result2 = null;
-                    if (reportFailures === 0) {
-                      matchFailed("\"NOT\"");
-                    }
-                  }
-                  if (result2 !== null) {
-                    result3 = parse__();
-                    if (result3 !== null) {
-                      if (input.substr(pos, 5).toLowerCase() === "exist") {
-                        result4 = input.substr(pos, 5);
-                        pos += 5;
-                      } else {
-                        result4 = null;
-                        if (reportFailures === 0) {
-                          matchFailed("\"EXIST\"");
-                        }
-                      }
-                      if (result4 !== null) {
-                        if (input.substr(pos, 1).toLowerCase() === "s") {
-                          result5 = input.substr(pos, 1);
-                          pos++;
-                        } else {
-                          result5 = null;
-                          if (reportFailures === 0) {
-                            matchFailed("\"S\"");
-                          }
-                        }
-                        result5 = result5 !== null ? result5 : "";
-                        if (result5 !== null) {
-                          result6 = parse__();
-                          if (result6 !== null) {
-                            result7 = parse_SCHEMA_PROPERTIES();
-                            if (result7 !== null) {
-                              result0 = [result0, result1, result2, result3, result4, result5, result6, result7];
-                            } else {
-                              result0 = null;
-                              pos = pos1;
-                            }
-                          } else {
-                            result0 = null;
-                            pos = pos1;
-                          }
-                        } else {
-                          result0 = null;
-                          pos = pos1;
-                        }
-                      } else {
-                        result0 = null;
-                        pos = pos1;
-                      }
-                    } else {
-                      result0 = null;
-                      pos = pos1;
-                    }
-                  } else {
-                    result0 = null;
-                    pos = pos1;
-                  }
-                } else {
-                  result0 = null;
-                  pos = pos1;
-                }
-              } else {
-                result0 = null;
-                pos = pos1;
-              }
-              if (result0 !== null) {
-                result0 = (function(offset, props) {
-                    props.ifNotExists = true;
-                    return props;
-                  })(pos0, result0[7]);
+                result0 = (function(offset) { return {}; })(pos0);
               }
               if (result0 === null) {
                 pos = pos0;
-              }
-              if (result0 === null) {
-                pos0 = pos;
-                result0 = parse__();
-                if (result0 !== null) {
-                  result0 = (function(offset) { return {}; })(pos0);
-                }
-                if (result0 === null) {
-                  pos = pos0;
-                }
               }
             }
           }
@@ -14006,7 +13994,7 @@ module.exports = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, name) {
-              return { statement: "USE", datatbase: name };
+              return { statement: "USE", database: name };
             })(pos0, result0[3]);
         }
         if (result0 === null) {

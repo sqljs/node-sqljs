@@ -4,5 +4,5 @@
 
 USE_STATEMENT "USE"
   = "USE"i __ ("DATABASE"i __)? name:ID {
-      return { statement: "USE", datatbase: name };
+      return { statement: "USE", database: name };
     }
