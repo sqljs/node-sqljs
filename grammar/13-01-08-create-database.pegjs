@@ -4,7 +4,7 @@
 
 
 CREATE_DATABASE "CREATE DATABASE"
-  = "CREATE"i __ what:("SCHEMA"i/"DATABASE"i) _ exists:("IF"i _ "NOT"i _ "EXIST"i "S"i)? _ name:ID _ props:SCHEMA_PROPERTIES {
+  = "CREATE"i __ what:("SCHEMA"i/"DATABASE"i) _ exists:("IF"i _ "NOT"i _ "EXIST"i "S"i?)? _ name:ID _ props:SCHEMA_PROPERTIES {
       props.statement = 'CREATE';
       props.what = what.toUpperCase();
       props.database = name;

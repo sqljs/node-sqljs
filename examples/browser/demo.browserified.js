@@ -361,6 +361,7 @@ module.exports = (function(){
         "DecimalLiteral": parse_DecimalLiteral,
         "BOOLEAN": parse_BOOLEAN,
         "NULL": parse_NULL,
+        "ID_OR_STR": parse_ID_OR_STR,
         "DATABASE_NAME": parse_DATABASE_NAME,
         "TABLE_NAME": parse_TABLE_NAME,
         "COLUMN_NAME": parse_COLUMN_NAME,
@@ -2389,6 +2390,33 @@ module.exports = (function(){
         return result0;
       }
       
+      function parse_ID_OR_STR() {
+        var cacheKey = "ID_OR_STR@" + pos;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = cachedResult.nextPos;
+          return cachedResult.result;
+        }
+        
+        var result0;
+        
+        reportFailures++;
+        result0 = parse_ID();
+        if (result0 === null) {
+          result0 = parse_STRING();
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("ID or STR");
+        }
+        
+        cache[cacheKey] = {
+          nextPos: pos,
+          result:  result0
+        };
+        return result0;
+      }
+      
       function parse_DATABASE_NAME() {
         var cacheKey = "DATABASE_NAME@" + pos;
         var cachedResult = cache[cacheKey];
@@ -2435,7 +2463,7 @@ module.exports = (function(){
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
-        result0 = parse_ID();
+        result0 = parse_ID_OR_STR();
         if (result0 !== null) {
           if (input.charCodeAt(pos) === 46) {
             result1 = ".";
@@ -2447,7 +2475,7 @@ module.exports = (function(){
             }
           }
           if (result1 !== null) {
-            result2 = parse_ID();
+            result2 = parse_ID_OR_STR();
             if (result2 !== null) {
               result0 = [result0, result1, result2];
             } else {
@@ -2472,7 +2500,7 @@ module.exports = (function(){
         }
         if (result0 === null) {
           pos0 = pos;
-          result0 = parse_ID();
+          result0 = parse_ID_OR_STR();
           if (result0 !== null) {
             result0 = (function(offset, name) { return { table: name }; })(pos0, result0);
           }
@@ -2506,7 +2534,7 @@ module.exports = (function(){
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
-        result0 = parse_ID();
+        result0 = parse_ID_OR_STR();
         if (result0 !== null) {
           if (input.charCodeAt(pos) === 46) {
             result1 = ".";
@@ -2518,7 +2546,7 @@ module.exports = (function(){
             }
           }
           if (result1 !== null) {
-            result2 = parse_ID();
+            result2 = parse_ID_OR_STR();
             if (result2 !== null) {
               if (input.charCodeAt(pos) === 46) {
                 result3 = ".";
@@ -2530,7 +2558,7 @@ module.exports = (function(){
                 }
               }
               if (result3 !== null) {
-                result4 = parse_ID();
+                result4 = parse_ID_OR_STR();
                 if (result4 !== null) {
                   result0 = [result0, result1, result2, result3, result4];
                 } else {
@@ -2564,7 +2592,7 @@ module.exports = (function(){
         if (result0 === null) {
           pos0 = pos;
           pos1 = pos;
-          result0 = parse_ID();
+          result0 = parse_ID_OR_STR();
           if (result0 !== null) {
             if (input.charCodeAt(pos) === 46) {
               result1 = ".";
@@ -2576,7 +2604,7 @@ module.exports = (function(){
               }
             }
             if (result1 !== null) {
-              result2 = parse_ID();
+              result2 = parse_ID_OR_STR();
               if (result2 !== null) {
                 result0 = [result0, result1, result2];
               } else {
@@ -2601,7 +2629,7 @@ module.exports = (function(){
           }
           if (result0 === null) {
             pos0 = pos;
-            result0 = parse_ID();
+            result0 = parse_ID_OR_STR();
             if (result0 !== null) {
               result0 = (function(offset, column) {
                   return { column: column };
@@ -6233,7 +6261,7 @@ module.exports = (function(){
               }
             }
             if (result2 !== null) {
-              result3 = parse___();
+              result3 = parse__();
               if (result3 !== null) {
                 pos2 = pos;
                 if (input.substr(pos, 2).toLowerCase() === "if") {
@@ -6279,6 +6307,7 @@ module.exports = (function(){
                               matchFailed("\"S\"");
                             }
                           }
+                          result9 = result9 !== null ? result9 : "";
                           if (result9 !== null) {
                             result4 = [result4, result5, result6, result7, result8, result9];
                           } else {
@@ -6307,7 +6336,7 @@ module.exports = (function(){
                 }
                 result4 = result4 !== null ? result4 : "";
                 if (result4 !== null) {
-                  result5 = parse___();
+                  result5 = parse__();
                   if (result5 !== null) {
                     result6 = parse_ID();
                     if (result6 !== null) {
@@ -6357,7 +6386,7 @@ module.exports = (function(){
               props.statement = 'CREATE';
               props.what = what.toUpperCase();
               props.database = name;
-              if (exists.length > 0) props.ifNotExist = true;
+              if (exists.length > 0) props.ifNotExists = true;
               return props;
             })(pos0, result0[2], result0[4], result0[6], result0[8]);
         }
@@ -7394,21 +7423,36 @@ module.exports = (function(){
                   if (result2 !== null) {
                     result3 = parse__();
                     if (result3 !== null) {
-                      if (input.substr(pos, 6).toLowerCase() === "exists") {
-                        result4 = input.substr(pos, 6);
-                        pos += 6;
+                      if (input.substr(pos, 5) === "EXIST") {
+                        result4 = "EXIST";
+                        pos += 5;
                       } else {
                         result4 = null;
                         if (reportFailures === 0) {
-                          matchFailed("\"EXISTS\"");
+                          matchFailed("\"EXIST\"");
                         }
                       }
                       if (result4 !== null) {
-                        result5 = parse__();
+                        if (input.substr(pos, 1).toLowerCase() === "s") {
+                          result5 = input.substr(pos, 1);
+                          pos++;
+                        } else {
+                          result5 = null;
+                          if (reportFailures === 0) {
+                            matchFailed("\"S\"");
+                          }
+                        }
+                        result5 = result5 !== null ? result5 : "";
                         if (result5 !== null) {
-                          result6 = parse_TABLE_PROPERTIES();
+                          result6 = parse__();
                           if (result6 !== null) {
-                            result0 = [result0, result1, result2, result3, result4, result5, result6];
+                            result7 = parse_TABLE_PROPERTIES();
+                            if (result7 !== null) {
+                              result0 = [result0, result1, result2, result3, result4, result5, result6, result7];
+                            } else {
+                              result0 = null;
+                              pos = pos1;
+                            }
                           } else {
                             result0 = null;
                             pos = pos1;
@@ -7441,7 +7485,7 @@ module.exports = (function(){
                 result0 = (function(offset, props) {
                     props.ifNotExists = true;
                     return props;
-                  })(pos0, result0[6]);
+                  })(pos0, result0[7]);
               }
               if (result0 === null) {
                 pos = pos0;
@@ -7902,7 +7946,7 @@ module.exports = (function(){
         if (result0 === null) {
           pos0 = pos;
           pos1 = pos;
-          result0 = parse_ID();
+          result0 = parse_ID_OR_STR();
           if (result0 !== null) {
             result1 = parse__();
             if (result1 !== null) {
