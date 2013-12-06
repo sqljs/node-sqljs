@@ -66,7 +66,7 @@ CREATE_DEFINITIONS
 
 CREATE_DEFINITION "column create definition"
   = CREATE_DEFINITION_CONSTRAINT
-  / name:ID _ props:COLUMN_TYPE_PROPERTIES { props.name = name; return props; }
+  / name:ID_OR_STR _ props:COLUMN_TYPE_PROPERTIES { props.name = name; return props; }
 
 
 CREATE_DEFINITION_CONSTRAINT
