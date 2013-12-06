@@ -1,0 +1,10 @@
+SELECT
+	p.productId as productId,
+	p.name as name,
+	p.EANproduct as EANproduct,
+	p.EANpackage as EANpackage
+FROM `storeMovements` sm
+LEFT OUTER JOIN `products` p ON sm.`productId` = p.`productId`
+WHERE ((sm.storeIdFrom = '1') OR (sm.storeIdTo = '1'))
+GROUP BY p.productId, p.name, p.EANproduct, p.EANpackage
+ORDER BY p.productId

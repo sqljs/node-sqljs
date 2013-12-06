@@ -28,7 +28,7 @@
 
 SELECT_STATEMENT "SELECT"
   = "SELECT"i __
-        (("ALL"i / "DISTINCTROW"i / "DISTINCT"i) __ )?
+        (("ALL"i / "DISTINCT"i (_/"_") "ROW"i / "DISTINCT"i) __ )?
         ("HIGH_PRIORITY"i __)?
         ("STRAIGHT_JOIN"i __)?
         ("SQL_SMALL_RESULT"i __)?
@@ -65,11 +65,52 @@ SELECT_STATEMENT "SELECT"
 
 
 SELECT_EXPRESSION_LIST
-  = "(" _ col:(ID/STRING) tail:(_ ',' _ col:(ID/STRING) {return col;})* _ ")" _ {
+  = _ col:(SELECT_EXPRESSION) tail:(_ ',' _ col:(SELECT_EXPRESSION) {return col;})* _ {
       tail.unshift(col);
       return tail;
     }
   / { return []; }
+
+
+SELECT_EXPRESSION
+  = col:AGGREGATED_SOURCE _ "AS"i? _ alias:ID { col.alias = alias; return col; }
+  / AGGREGATED_SOURCE
+  / col:SELECT_COLUMN_SOURCE _ "AS"i? _ alias:ID { col.alias = alias; return col; }
+  / SELECT_COLUMN_SOURCE
+
+
+AGGREGATION_FUNCTION_NAME
+  = "AVG"i
+  / "BIT_AND"i
+  / "BIT_OR"i
+  / "BIT_XOR"i
+  / "COUNT"i
+  / "GROUP_CONCAT"i
+  / "MAX"i
+  / "MIN"i
+  / "STD"i
+  / "STDDEV_POP"i
+  / "STDDEV_SAMP"i
+  / "STDDEV"i
+  / "SUM"i
+  / "VAR_POP"i
+  / "VAR_SAMP"i
+  / "VARIANCE"i
+
+
+AGGREGATED_SOURCE
+  = "COUNT"i _ ("(" _ "*" _ ")" / "*")
+  / "COUNT"i _ "(" _ "DISTINCT"i __ SELECT_COLUMN_SOURCE _ ")"
+  / "COUNT"i _ "DISTINCT"i "(" _ SELECT_COLUMN_SOURCE _ ")"
+  / "COUNT"i _ "DISTINCT"i _ SELECT_COLUMN_SOURCE _ 
+  / AGGREGATION_FUNCTION_NAME _ "(" _ EXPRESSION _ ")"
+  / AGGREGATION_FUNCTION_NAME __ EXPRESSION
+
+
+SELECT_COLUMN_SOURCE
+  = _ table:ID _ "." _ col:ID { return { column: col, tableAlias: table }; }
+  / _ col:ID { return { column: col }; }
+  / _ COND_EXPR
 
 
 FROM_TABLE_REFERENCES
@@ -77,6 +118,8 @@ FROM_TABLE_REFERENCES
       tail.unshift(col);
       return tail;
     }
+  / _ table:ID
+
 
 WHERE_CONDITION
   = EXPRESSION
