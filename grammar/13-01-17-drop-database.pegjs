@@ -17,11 +17,8 @@ DROP_STATEMENT "DROP"
       };
     }
   / "DROP"i __ "TABLE"i __ name:TABLE_NAME {
-      return {
-        statement: "DROP TABLE",
-        schema: name.schema,
-        table: name.name
-      };
+      var res = { statement: "DROP TABLE" };
+      return merge(name, res);
     }
 
 IF_EXISTS_OPT
