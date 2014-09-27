@@ -21,6 +21,16 @@
     }
   }
 
+	function merge(src, dst) {
+ 	  	if( dst == null ) dst = {};
+	  	if( src == null ) return dst;
+	  	
+	    for (var k in src) {
+	      dst[k] = src[k];
+	    }
+	    return dst;
+	}
+
 }
 
 
