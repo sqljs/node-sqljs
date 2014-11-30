@@ -1,6 +1,10 @@
 sqljs [![Build Status](https://secure.travis-ci.org/langpavel/node-sqljs.png?branch=master)](http://travis-ci.org/langpavel/node-sqljs)
 =====
 
+[![Dependency Status](https://david-dm.org/langpavel/node-sqljs.png)](https://david-dm.org/langpavel/node-sqljs) [![devDependency Status](https://david-dm.org/langpavel/node-sqljs/dev-status.png)](https://david-dm.org/langpavel/node-sqljs#info=devDependencies) [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/langpavel/node-sqljs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Gitipay](https://img.shields.io/gratipay/langpavel.svg)](https://gratipay.com/langpavel/)
+
+
 SQL parser for node.js
 
 Synopsis
