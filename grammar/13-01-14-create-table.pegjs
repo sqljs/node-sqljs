@@ -192,6 +192,20 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       if(length.decimals) props.decimals = length.decimals;
       return props;
     }
+  / _ ("BINARY"i/"CHAR"i __ "BINARY"i) length:TYPE_LENGTH props:COLUMN_TYPE_PROPERTIES {
+      if(props.type)
+        throw new SyntaxError("Ambiguous type");
+      props.type = 'BINARY';
+      if(length) props.length = length;
+      return props;
+    }
+  / _ ("VARBIN"i/"VARCHAR"i __ "BINARY"i) length:TYPE_LENGTH props:COLUMN_TYPE_PROPERTIES {
+      if(props.type)
+        throw new SyntaxError("Ambiguous type");
+      props.type = 'VARBIN';
+      if(length) props.length = length;
+      return props;
+    }
   / _ ("VARCHAR"i/"CHARACTER"i __ "VARYING"i) length:TYPE_LENGTH props:COLUMN_TYPE_PROPERTIES {
       if(props.type)
         throw new SyntaxError("Ambiguous type");
