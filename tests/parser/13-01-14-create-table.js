@@ -164,13 +164,13 @@ exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null,
       'CREATE TABLE "table" (col1 integer)',
       result8
     ], [
-      'CREATE TABLE "table" (col1 varbin(16))',
+      'CREATE TABLE "table" (col1 varbinary(16))',
       [{
           statement: 'CREATE',
           what: 'TABLE',
           schema: undefined,
           table: 'table',
-          definitions: [ { type: 'VARBIN', length: 16, name: 'col1' } ]
+          definitions: [ { type: 'VARBINARY', length: 16, name: 'col1' } ]
       }]
     ], [
       'CREATE TABLE "table" (col1 char binary(16))',
