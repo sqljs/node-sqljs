@@ -9,13 +9,14 @@ ALTER_TABLE
       return {
         statement: "ALTER",
         what: "TABLE",
+        table: name.table,
         ignore: !!ignore,
         specifications:specifications
       };
     }
 
 ALTER_TABLE_SPECIFICATIONS
-  = first:ALTER_TABLE_SPECIFICATION _ tail:(',' _ spec:ALTER_TABLE_SPECIFICATION { return spec; })* 
+  = first:ALTER_TABLE_SPECIFICATION _ tail:(',' _ spec:ALTER_TABLE_SPECIFICATION { return spec; })*
     {
       tail.unshift(first);
       return tail;

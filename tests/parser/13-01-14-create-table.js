@@ -209,6 +209,21 @@ exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null,
           definitions: [ { type: 'TEXT', name: 'col1' } ]
       }]
     ], [
+      'ALTER TABLE `t` ADD PRIMARY KEY (`type`,`id`)',
+      [{
+          statement: 'ALTER',
+          what: 'TABLE',
+          table: 't',
+          ignore: false,
+          specifications: [{
+            type: 'CONSTRAINT',
+            constraint: 'PRIMARY KEY',
+            constraintName: undefined,
+            columns: [ 'type', 'id' ],
+            alter_type: 'ADD'
+          }]
+      }]
+    ], [
       'CREATE TABLE "a b c" ("x y z" integer)',
       result9
     ]
