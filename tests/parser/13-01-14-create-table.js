@@ -93,61 +93,61 @@ var result9 = [
   }
 ];
 
-exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null, 
+exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null,
   undefined, [
     [
-      'CREATE TABLE table ()', 
+      'CREATE TABLE table ()',
       result1
     ], [
-      'CREATE TABLE table ();', 
+      'CREATE TABLE table ();',
       result1
     ], [
-      'CREATE TABLE table()', 
+      'CREATE TABLE table()',
       result1
     ], [
-      'CREATE TABLE `table`()', 
+      'CREATE TABLE `table`()',
       result1
     ], [
-      'CREATE TABLE table(  )', 
+      'CREATE TABLE table(  )',
       result1
     ], [
-      'CREATE TABLE table(col1)', 
+      'CREATE TABLE table(col1)',
       result2
     ], [
-      'CREATE TABLE table( col1)', 
+      'CREATE TABLE table( col1)',
       result2
     ], [
-      'CREATE TABLE table(col1 )', 
+      'CREATE TABLE table(col1 )',
       result2
     ], [
-      'CREATE TABLE table( col1, )', 
+      'CREATE TABLE table( col1, )',
       result2
     ], [
-      'CREATE TABLE table( col1 , )', 
+      'CREATE TABLE table( col1 , )',
       result2
     ], [
-      'CREATE TABLE table( col1 null, )', 
+      'CREATE TABLE table( col1 null, )',
       result3
     ], [
-      'CREATE TABLE table( col1 null , )', 
+      'CREATE TABLE table( col1 null , )',
       result3
     ], [
-      'CREATE TABLE table( col1 not null, )', 
+      'CREATE TABLE table( col1 not null, )',
       result4
     ], [
-      'CREATE TABLE table( col1 noTnUll, )', 
+      'CREATE TABLE table( col1 noTnUll, )',
       result4
     ], [
-      'CREATE TABLE table( col1 int not null, )', 
+      'CREATE TABLE table( col1 int not null, )',
       result5
     ], [
-      'CREATE TABLE table( col1 not null int, )', 
+      'CREATE TABLE table( col1 not null int, )',
       result5
     ], [
-      'CREATE TEMP TABLE schema.table ()', 
+      'CREATE TEMP TABLE schema.table ()',
       result6
     ], [
-      'CREATE TEMP TABLE schema.table IF NOT EXISTS ()', 
+      'CREATE TEMP TABLE schema.table IF NOT EXISTS ()',
       [{
         statement: 'CREATE',
         what: 'TABLE',
