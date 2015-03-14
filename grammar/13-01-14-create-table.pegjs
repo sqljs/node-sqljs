@@ -220,20 +220,26 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       if(length) props.length = length;
       return props;
     }
-  / _ (prefix:("TINY"i/"MEDIUM"i/"LONG"i) _)? "TEXT"i props:COLUMN_TYPE_PROPERTIES {
+  / _ (prefix:("TINY"i/"MEDIUM"i/"LONG"i)? _) "TEXT"i props:COLUMN_TYPE_PROPERTIES {
       if(props.type)
         throw new SyntaxError("Ambiguous type");
       props.type = typeof prefix !== 'undefined' ? prefix.toUpperCase()+'TEXT' : 'TEXT';
       return props;
     }
-  / _ type:("DATETIME"i/"DATE"i/"TIMESTAMP"i/"TIME"i/"YEAR"i) length:TYPE_LENGTH _ 
-        props:COLUMN_TYPE_PROPERTIES 
+  / _ (prefix:("TINY"i/"MEDIUM"i/"LONG"i)? _) "BLOB"i props:COLUMN_TYPE_PROPERTIES {
+      if(props.type)
+        throw new SyntaxError("Ambiguous type");
+      props.type = typeof prefix !== 'undefined' ? prefix.toUpperCase()+'BLOB' : 'BLOB';
+      return props;
+    }
+  / _ type:("DATETIME"i/"DATE"i/"TIMESTAMP"i/"TIME"i/"YEAR"i) length:TYPE_LENGTH _
+        props:COLUMN_TYPE_PROPERTIES
     {
       if(props.type)
         throw new SyntaxError("Ambiguous type");
       props.type = type.toUpperCase();
       if(length) props.length = length;
-      return props;      
+      return props;
     }
   / _ "ENUM"i _ "(" values:STRING_ID_LIST ")" _ props:COLUMN_TYPE_PROPERTIES {
       if(props.type)

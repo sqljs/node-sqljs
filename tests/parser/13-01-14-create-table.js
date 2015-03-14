@@ -182,6 +182,33 @@ exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null,
           definitions: [ { type: 'BINARY', length: 16, name: 'col1' } ]
       }]
     ], [
+      'CREATE TABLE "table" (col1 mediumblob)',
+      [{
+          statement: 'CREATE',
+          what: 'TABLE',
+          schema: undefined,
+          table: 'table',
+          definitions: [ { type: 'MEDIUMBLOB', name: 'col1' } ]
+      }]
+    ], [
+      'CREATE TABLE "table" (col1 long text)',
+      [{
+          statement: 'CREATE',
+          what: 'TABLE',
+          schema: undefined,
+          table: 'table',
+          definitions: [ { type: 'LONGTEXT', name: 'col1' } ]
+      }]
+    ], [
+      'CREATE TABLE "table" (col1 text)',
+      [{
+          statement: 'CREATE',
+          what: 'TABLE',
+          schema: undefined,
+          table: 'table',
+          definitions: [ { type: 'TEXT', name: 'col1' } ]
+      }]
+    ], [
       'CREATE TABLE "a b c" ("x y z" integer)',
       result9
     ]
