@@ -1,19 +1,19 @@
 {
   "name": "sqljs",
-  "version": "0.0.0-5",
+  "version": "0.0.0-6",
   "description": "SQL parser",
   "keywords": [
     "database",
     "sql"
   ],
-  "author": "Pavel Lang <langpavel@phpskelet.org> (https://github.com/langpavel)",
-  "homepage": "https://github.com/langpavel/node-sqljs",
+  "author": "Pavel Lang <langpavel@phpskelet.org> (https://github.com/sqljs)",
+  "homepage": "https://github.com/sqljs/node-sqljs",
   "repository": {
     "type": "git",
-    "url": "git://github.com/langpavel/node-sqljs.git"
+    "url": "https://github.com/sqljs/node-sqljs.git"
   },
   "bugs": {
-    "url": "https://github.com/langpavel/node-sqljs/issues"
+    "url": "https://github.com/sqljs/node-sqljs/issues"
   },
   "main": "./lib/sqljs",
   "bin": {
@@ -24,12 +24,12 @@
   },
   "dependencies": {
     "colors": "^1.0.3",
-    "commander": "^2.7.1",
-    "pegjs": "~0.7.0"
+    "commander": "^2.7.1"
   },
   "devDependencies": {
-    "browserify": "^9.0.3",
-    "nodeunit": "^0.9.1"
+    "browserify": "^10.2.4",
+    "nodeunit": "^0.9.1",
+    "pegjs": "^0.7.0"
   },
   "optionalDependencies": {},
   "engines": {
