@@ -93,61 +93,61 @@ var result9 = [
   }
 ];
 
-exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null, 
+exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null,
   undefined, [
     [
-      'CREATE TABLE table ()', 
+      'CREATE TABLE table ()',
       result1
     ], [
-      'CREATE TABLE table ();', 
+      'CREATE TABLE table ();',
       result1
     ], [
-      'CREATE TABLE table()', 
+      'CREATE TABLE table()',
       result1
     ], [
-      'CREATE TABLE `table`()', 
+      'CREATE TABLE `table`()',
       result1
     ], [
-      'CREATE TABLE table(  )', 
+      'CREATE TABLE table(  )',
       result1
     ], [
-      'CREATE TABLE table(col1)', 
+      'CREATE TABLE table(col1)',
       result2
     ], [
-      'CREATE TABLE table( col1)', 
+      'CREATE TABLE table( col1)',
       result2
     ], [
-      'CREATE TABLE table(col1 )', 
+      'CREATE TABLE table(col1 )',
       result2
     ], [
-      'CREATE TABLE table( col1, )', 
+      'CREATE TABLE table( col1, )',
       result2
     ], [
-      'CREATE TABLE table( col1 , )', 
+      'CREATE TABLE table( col1 , )',
       result2
     ], [
-      'CREATE TABLE table( col1 null, )', 
+      'CREATE TABLE table( col1 null, )',
       result3
     ], [
-      'CREATE TABLE table( col1 null , )', 
+      'CREATE TABLE table( col1 null , )',
       result3
     ], [
-      'CREATE TABLE table( col1 not null, )', 
+      'CREATE TABLE table( col1 not null, )',
       result4
     ], [
-      'CREATE TABLE table( col1 noTnUll, )', 
+      'CREATE TABLE table( col1 noTnUll, )',
       result4
     ], [
-      'CREATE TABLE table( col1 int not null, )', 
+      'CREATE TABLE table( col1 int not null, )',
       result5
     ], [
-      'CREATE TABLE table( col1 not null int, )', 
+      'CREATE TABLE table( col1 not null int, )',
       result5
     ], [
-      'CREATE TEMP TABLE schema.table ()', 
+      'CREATE TEMP TABLE schema.table ()',
       result6
     ], [
-      'CREATE TEMP TABLE schema.table IF NOT EXISTS ()', 
+      'CREATE TEMP TABLE schema.table IF NOT EXISTS ()',
       [{
         statement: 'CREATE',
         what: 'TABLE',
@@ -163,6 +163,66 @@ exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null,
     ], [
       'CREATE TABLE "table" (col1 integer)',
       result8
+    ], [
+      'CREATE TABLE "table" (col1 varbinary(16))',
+      [{
+          statement: 'CREATE',
+          what: 'TABLE',
+          schema: undefined,
+          table: 'table',
+          definitions: [ { type: 'VARBINARY', length: 16, name: 'col1' } ]
+      }]
+    ], [
+      'CREATE TABLE "table" (col1 char binary(16))',
+      [{
+          statement: 'CREATE',
+          what: 'TABLE',
+          schema: undefined,
+          table: 'table',
+          definitions: [ { type: 'BINARY', length: 16, name: 'col1' } ]
+      }]
+    ], [
+      'CREATE TABLE "table" (col1 mediumblob)',
+      [{
+          statement: 'CREATE',
+          what: 'TABLE',
+          schema: undefined,
+          table: 'table',
+          definitions: [ { type: 'MEDIUMBLOB', name: 'col1' } ]
+      }]
+    ], [
+      'CREATE TABLE "table" (col1 long text)',
+      [{
+          statement: 'CREATE',
+          what: 'TABLE',
+          schema: undefined,
+          table: 'table',
+          definitions: [ { type: 'LONGTEXT', name: 'col1' } ]
+      }]
+    ], [
+      'CREATE TABLE "table" (col1 text)',
+      [{
+          statement: 'CREATE',
+          what: 'TABLE',
+          schema: undefined,
+          table: 'table',
+          definitions: [ { type: 'TEXT', name: 'col1' } ]
+      }]
+    ], [
+      'ALTER TABLE `t` ADD PRIMARY KEY (`type`,`id`)',
+      [{
+          statement: 'ALTER',
+          what: 'TABLE',
+          table: 't',
+          ignore: false,
+          specifications: [{
+            type: 'CONSTRAINT',
+            constraint: 'PRIMARY KEY',
+            constraintName: undefined,
+            columns: [ 'type', 'id' ],
+            alter_type: 'ADD'
+          }]
+      }]
     ], [
       'CREATE TABLE "a b c" ("x y z" integer)',
       result9

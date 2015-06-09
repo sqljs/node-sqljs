@@ -3,17 +3,17 @@
 // http://dev.mysql.com/doc/refman/5.7/en/create-table.html
 
 CREATE_TABLE
-  = ("CREATE"i __)? 
-      temp:("TEMP"i "ORARY"i? _)? "TABLE"i __ 
+  = ("CREATE"i __)?
+      temp:("TEMP"i "ORARY"i? _)? "TABLE"i __
       props1:TABLE_PROPERTIES
-      table:TABLE_NAME _ 
+      table:TABLE_NAME _
       props2:TABLE_PROPERTIES
       '(' columns:CREATE_DEFINITIONS ')' _
-      props:TABLE_PROPERTIES 
-    { 
+      props:TABLE_PROPERTIES
+    {
       safeMergeObject(props, props1);
       safeMergeObject(props, props2);
-      props.statement = "CREATE"; 
+      props.statement = "CREATE";
       props.what = "TABLE";
       props.schema = table.schema;
       props.table = table.table;
@@ -31,9 +31,9 @@ TABLE_PROPERTIES
       props.charset = charset;
       return props;
     }
-  / ("DEFAULT"i __)? "COLLAT"i ("E"i/"ION"i) (_ "=" _ / __) 
-      collate:COLLATION_NAME _ 
-      props:TABLE_PROPERTIES 
+  / ("DEFAULT"i __)? "COLLAT"i ("E"i/"ION"i) (_ "=" _ / __)
+      collate:COLLATION_NAME _
+      props:TABLE_PROPERTIES
     {
       props.collate = collate;
       return props;
@@ -70,24 +70,24 @@ CREATE_DEFINITION "column create definition"
 
 
 CREATE_DEFINITION_CONSTRAINT
-  = constraint_name:CONSTRAINT_NAME_OPT "PRIMARY"i _ ("KEY"i _ )? 
-      "(" _ idlist:ID_LIST ")" _ 
+  = constraint_name:CONSTRAINT_NAME_OPT "PRIMARY"i _ ("KEY"i _ )?
+      "(" _ idlist:ID_LIST ")" _
     {
-      return { 
-        type: "CONSTRAINT", 
-        constraint: "PRIMARY KEY", 
-        constraintName:constraint_name, 
+      return {
+        type: "CONSTRAINT",
+        constraint: "PRIMARY KEY",
+        constraintName:constraint_name,
         columns: idlist
       };
     }
-  / constraint_name:CONSTRAINT_NAME_OPT "FOREIGN"i _ ("KEY"i _ )? 
+  / constraint_name:CONSTRAINT_NAME_OPT "FOREIGN"i _ ("KEY"i _ )?
       idx_name:(name:(ID/STRING) _ )?
       "(" _ idlist:ID_LIST ")" _
       ref:REFERENCE_DEFINITION
     {
-      return { 
-        type: "CONSTRAINT", 
-        constraint: "FOREIGN KEY", 
+      return {
+        type: "CONSTRAINT",
+        constraint: "FOREIGN KEY",
         constraintName:constraint_name,
         indexName:idx_name,
         columns: idlist,
@@ -95,7 +95,7 @@ CREATE_DEFINITION_CONSTRAINT
       };
     }
   / "UNIQUE"i __ type:("KEY"i/"INDEX"i)?
-      name:(__ name:(ID/STRING) {return name;})? _ "(" _ idlist:ID_LIST ")" _ 
+      name:(__ name:(ID/STRING) {return name;})? _ "(" _ idlist:ID_LIST ")" _
     {
       var key = {
         type: "CONSTRAINT",
@@ -107,8 +107,8 @@ CREATE_DEFINITION_CONSTRAINT
         key.name = name;
       return key;
     }
-  / unique:("UNIQUE"i __)? type:("KEY"i/"INDEX"i) 
-      name:(__ name:(ID/STRING) {return name;})? _ "(" _ idlist:ID_LIST ")" _ 
+  / unique:("UNIQUE"i __)? type:("KEY"i/"INDEX"i)
+      name:(__ name:(ID/STRING) {return name;})? _ "(" _ idlist:ID_LIST ")" _
     {
       var key = {
         type: "CONSTRAINT",
@@ -168,7 +168,7 @@ TYPE_LENGTH
 
 COLUMN_TYPE_PROPERTIES "Column type properties"
   = _ prefix:("TINY"i/"SMALL"i/"MEDIUM"i/"BIG"i)? _ "INT"i "EGER"i? length:TYPE_LENGTH
-      props:COLUMN_TYPE_PROPERTIES 
+      props:COLUMN_TYPE_PROPERTIES
     {
       if(props.type)
         throw new SyntaxError("Ambiguous type");
@@ -192,6 +192,20 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       if(length.decimals) props.decimals = length.decimals;
       return props;
     }
+  / _ ("CHAR"i __ "BINARY"i) length:TYPE_LENGTH props:COLUMN_TYPE_PROPERTIES {
+      if(props.type)
+        throw new SyntaxError("Ambiguous type");
+      props.type = 'BINARY';
+      if(length) props.length = length;
+      return props;
+    }
+  / _ ("VARBINARY"i/"VARCHAR"i __ "BINARY"i) length:TYPE_LENGTH props:COLUMN_TYPE_PROPERTIES {
+      if(props.type)
+        throw new SyntaxError("Ambiguous type");
+      props.type = 'VARBINARY';
+      if(length) props.length = length;
+      return props;
+    }
   / _ ("VARCHAR"i/"CHARACTER"i __ "VARYING"i) length:TYPE_LENGTH props:COLUMN_TYPE_PROPERTIES {
       if(props.type)
         throw new SyntaxError("Ambiguous type");
@@ -206,20 +220,26 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       if(length) props.length = length;
       return props;
     }
-  / _ (prefix:("TINY"i/"MEDIUM"i/"LONG"i) _)? "TEXT"i props:COLUMN_TYPE_PROPERTIES {
+  / _ (prefix:("TINY"i/"MEDIUM"i/"LONG"i)? _) "TEXT"i props:COLUMN_TYPE_PROPERTIES {
       if(props.type)
         throw new SyntaxError("Ambiguous type");
       props.type = typeof prefix !== 'undefined' ? prefix.toUpperCase()+'TEXT' : 'TEXT';
       return props;
     }
-  / _ type:("DATETIME"i/"DATE"i/"TIMESTAMP"i/"TIME"i/"YEAR"i) length:TYPE_LENGTH _ 
-        props:COLUMN_TYPE_PROPERTIES 
+  / _ (prefix:("TINY"i/"MEDIUM"i/"LONG"i)? _) "BLOB"i props:COLUMN_TYPE_PROPERTIES {
+      if(props.type)
+        throw new SyntaxError("Ambiguous type");
+      props.type = typeof prefix !== 'undefined' ? prefix.toUpperCase()+'BLOB' : 'BLOB';
+      return props;
+    }
+  / _ type:("DATETIME"i/"DATE"i/"TIMESTAMP"i/"TIME"i/"YEAR"i) length:TYPE_LENGTH _
+        props:COLUMN_TYPE_PROPERTIES
     {
       if(props.type)
         throw new SyntaxError("Ambiguous type");
       props.type = type.toUpperCase();
       if(length) props.length = length;
-      return props;      
+      return props;
     }
   / _ "ENUM"i _ "(" values:STRING_ID_LIST ")" _ props:COLUMN_TYPE_PROPERTIES {
       if(props.type)
@@ -230,17 +250,17 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
     }
   / _ "UNSIGNED"i _ props:COLUMN_TYPE_PROPERTIES {
         props.unsigned=true;
-        return props; 
+        return props;
       }
   / _ "SIGNED"i _ props:COLUMN_TYPE_PROPERTIES {
         props.signed=true;
-        return props; 
+        return props;
       }
   / _ "NOT"i _ "NULL"i _ props:COLUMN_TYPE_PROPERTIES {
       if(typeof props.notNull !== 'undefined')
         throw new Error('NULL or NOT NULL?');
       props.notNull=true;
-      return props; 
+      return props;
     }
   / _ "NULL"i props:COLUMN_TYPE_PROPERTIES {
       if(typeof props.notNull !== 'undefined')
@@ -260,7 +280,7 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       props.autoIncrement=true;
       return props;
     }
-  / _ "COLLAT"i ("E"i/"ION"i) (_ "=" _ / __) 
+  / _ "COLLAT"i ("E"i/"ION"i) (_ "=" _ / __)
       collate:COLLATION_NAME _ props:COLUMN_TYPE_PROPERTIES
     {
       props.collate = collate;
