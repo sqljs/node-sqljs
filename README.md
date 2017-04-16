@@ -1,5 +1,6 @@
 sqljs [![Build Status](https://secure.travis-ci.org/sqljs/node-sqljs.png?branch=master)](http://travis-ci.org/sqljs/node-sqljs)
 =====
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/langpavel/node-sqljs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![Dependency Status](https://david-dm.org/sqljs/node-sqljs.png)](https://david-dm.org/sqljs/node-sqljs) [![devDependency Status](https://david-dm.org/sqljs/node-sqljs/dev-status.png)](https://david-dm.org/sqljs/node-sqljs#info=devDependencies) [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/sqljs/node-sqljs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Gitipay](https://img.shields.io/gratipay/langpavel.svg)](https://gratipay.com/langpavel/)
