@@ -265,6 +265,13 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       props.values = values;
       return props;
     }
+  / _ "SET"i _ "(" values:STRING_ID_LIST ")" _ props:COLUMN_TYPE_PROPERTIES {
+      if(props.type)
+        throw new SyntaxError("Ambiguous type");
+      props.type = 'SET';
+      props.values = values;
+      return props;
+    }
   / _ "UNSIGNED"i _ props:COLUMN_TYPE_PROPERTIES {
         props.unsigned=true;
         return props;

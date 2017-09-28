@@ -259,6 +259,16 @@ exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null,
                            { type: 'CONSTRAINT', constraint: 'INDEX', unique: true, columns: [ {id: 'name', length: 10, } ] },
                          ]
         }]
+    ], [
+        'CREATE TABLE a (opts SET("blue", "red", "yellow"))',
+        [{
+            statement: 'CREATE',
+            what: 'TABLE',
+            schema: undefined,
+            table: 'a',
+            definitions: [ { type: 'SET', name: 'opts', values: [ 'blue', 'red', 'yellow', ] },
+                         ]
+        }]
     ]
   ], 'deepEqual'
 );
