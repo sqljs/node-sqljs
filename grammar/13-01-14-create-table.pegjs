@@ -94,9 +94,13 @@ CREATE_DEFINITION_CONSTRAINT
         references: ref
       };
     }
-  / "UNIQUE"i __ type:("KEY"i/"INDEX"i)?
+  / "UNIQUE"i _ type:("KEY"i/"INDEX"i)?
       name:(__ name:(ID/STRING) {return name;})? _ "(" _ idlist:ID_LIST ")" _
     {
+      if(!key && name) {
+        key = name
+        name = undefined
+      }
       var key = {
         type: "CONSTRAINT",
         constraint: (type ? type.toUpperCase() : 'INDEX'),
@@ -303,4 +307,3 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       return props;
     }
   / _ { return {}; }
-

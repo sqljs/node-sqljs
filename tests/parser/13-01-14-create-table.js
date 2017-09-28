@@ -226,6 +226,28 @@ exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null,
     ], [
       'CREATE TABLE "a b c" ("x y z" integer)',
       result9
+    ], [
+        'CREATE TABLE a (id integer, UNIQUE(id))',
+        [{
+            statement: 'CREATE',
+            what: 'TABLE',
+            schema: undefined,
+            table: 'a',
+            definitions: [ { type: 'INT', name: 'id' },
+                           { type: 'CONSTRAINT', constraint: 'INDEX', unique: true, columns: [ 'id' ] },
+                         ]
+        }]
+    ], [
+        'CREATE TABLE a (id integer, UNIQUE INDEX(id))',
+        [{
+            statement: 'CREATE',
+            what: 'TABLE',
+            schema: undefined,
+            table: 'a',
+            definitions: [ { type: 'INT', name: 'id' },
+                           { type: 'CONSTRAINT', constraint: 'INDEX', unique: true, columns: [ 'id' ] },
+                         ]
+        }]
     ]
   ], 'deepEqual'
 );
