@@ -95,9 +95,9 @@ CREATE_DEFINITION_CONSTRAINT
       };
     }
   / "UNIQUE"i _ type:("KEY"i/"INDEX"i)?
-      name:(__ name:(ID/STRING) {return name;})? _ "(" _ idlist:INDEX_COL_NAME_LIST ")" _
+      name:(_ name:(ID/STRING) {return name;})? _ "(" _ idlist:INDEX_COL_NAME_LIST ")" _
     {
-      if(!key && name) {
+      if(!key && name && name.match(/KEY|INDEX/i)) {
         key = name
         name = undefined
       }
