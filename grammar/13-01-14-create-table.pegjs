@@ -265,6 +265,12 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       if(length) props.length = length;
       return props;
     }
+  / _ "BOOLEAN"i _ props:COLUMN_TYPE_PROPERTIES {
+      if(props.type)
+        throw new SyntaxError("Ambiguous type");
+      props.type = 'BOOLEAN';
+      return props;
+    }
   / _ "ENUM"i _ "(" values:STRING_ID_LIST ")" _ props:COLUMN_TYPE_PROPERTIES {
       if(props.type)
         throw new SyntaxError("Ambiguous type");

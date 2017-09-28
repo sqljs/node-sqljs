@@ -279,6 +279,16 @@ exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null,
             definitions: [ { type: 'VARBINARY', name: 'name', length: 255, notNull: true },
                          ]
         }]
+    ], [
+        'CREATE TABLE a (flag BOOLEAN NOT NULL DEFAULT TRUE)',
+        [{
+            statement: 'CREATE',
+            what: 'TABLE',
+            schema: undefined,
+            table: 'a',
+            definitions: [ { type: 'BOOLEAN', name: 'flag', default: true, notNull: true },
+                         ]
+        }]
     ]
   ], 'deepEqual'
 );
