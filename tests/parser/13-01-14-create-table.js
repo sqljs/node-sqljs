@@ -234,7 +234,7 @@ exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null,
             schema: undefined,
             table: 'a',
             definitions: [ { type: 'INT', name: 'id' },
-                           { type: 'CONSTRAINT', constraint: 'INDEX', unique: true, columns: [ 'id' ] },
+                           { type: 'CONSTRAINT', constraint: 'INDEX', unique: true, columns: [ {id: 'id'} ] },
                          ]
         }]
     ], [
@@ -245,7 +245,18 @@ exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null,
             schema: undefined,
             table: 'a',
             definitions: [ { type: 'INT', name: 'id' },
-                           { type: 'CONSTRAINT', constraint: 'INDEX', unique: true, columns: [ 'id' ] },
+                           { type: 'CONSTRAINT', constraint: 'INDEX', unique: true, columns: [ {id: 'id'} ] },
+                         ]
+        }]
+    ], [
+        'CREATE TABLE a (name varchar(255), UNIQUE INDEX(name(10)))',
+        [{
+            statement: 'CREATE',
+            what: 'TABLE',
+            schema: undefined,
+            table: 'a',
+            definitions: [ { type: 'VARCHAR', name: 'name', length: 255 },
+                           { type: 'CONSTRAINT', constraint: 'INDEX', unique: true, columns: [ {id: 'name', length: 10, } ] },
                          ]
         }]
     ]

@@ -95,7 +95,7 @@ CREATE_DEFINITION_CONSTRAINT
       };
     }
   / "UNIQUE"i _ type:("KEY"i/"INDEX"i)?
-      name:(__ name:(ID/STRING) {return name;})? _ "(" _ idlist:ID_LIST ")" _
+      name:(__ name:(ID/STRING) {return name;})? _ "(" _ idlist:INDEX_COL_NAME_LIST ")" _
     {
       if(!key && name) {
         key = name
@@ -112,7 +112,7 @@ CREATE_DEFINITION_CONSTRAINT
       return key;
     }
   / unique:("UNIQUE"i __)? type:("KEY"i/"INDEX"i)
-      name:(__ name:(ID/STRING) {return name;})? _ "(" _ idlist:ID_LIST ")" _
+      name:(__ name:(ID/STRING) {return name;})? _ "(" _ idlist:INDEX_COL_NAME_LIST ")" _
     {
       var key = {
         type: "CONSTRAINT",
@@ -151,6 +151,19 @@ ID_LIST
 
 STRING_ID_LIST
   = id:(STRING/ID) _ rest:(',' _ id2:(STRING/ID) _ { return id2; })* { rest.unshift(id); return rest; }
+
+INDEX_COL_NAME_LIST
+  = index_col_name:INDEX_COL_NAME _ rest:(',' _ index_col_name2:INDEX_COL_NAME _ { return index_col_name2; })* { rest.unshift(index_col_name); return rest; }
+
+INDEX_COL_NAME
+  = id:ID length:TYPE_LENGTH {
+    var key = {
+      id: id,
+    }
+    if(length)
+      key.length = length
+    return key
+  }
 
 
 NUMERIC_TYPE_LENGTH
