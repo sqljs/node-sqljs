@@ -223,6 +223,13 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       if(length) props.length = length;
       return props;
     }
+  / _ ("VARBINARY"i/"VARCHAR"i) length:TYPE_LENGTH _ "BINARY"i _ props:COLUMN_TYPE_PROPERTIES {
+      if(props.type)
+        throw new SyntaxError("Ambiguous type");
+      props.type = 'VARBINARY';
+      if(length) props.length = length;
+      return props;
+    }
   / _ ("VARCHAR"i/"CHARACTER"i __ "VARYING"i) length:TYPE_LENGTH props:COLUMN_TYPE_PROPERTIES {
       if(props.type)
         throw new SyntaxError("Ambiguous type");

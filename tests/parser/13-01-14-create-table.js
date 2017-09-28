@@ -269,6 +269,16 @@ exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null,
             definitions: [ { type: 'SET', name: 'opts', values: [ 'blue', 'red', 'yellow', ] },
                          ]
         }]
+    ], [
+        'CREATE TABLE a (name VARCHAR(255) BINARY NOT NULL)',
+        [{
+            statement: 'CREATE',
+            what: 'TABLE',
+            schema: undefined,
+            table: 'a',
+            definitions: [ { type: 'VARBINARY', name: 'name', length: 255, notNull: true },
+                         ]
+        }]
     ]
   ], 'deepEqual'
 );
