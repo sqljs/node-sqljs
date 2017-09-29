@@ -289,6 +289,17 @@ exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null,
             definitions: [ { type: 'BOOLEAN', name: 'flag', default: true, notNull: true },
                          ]
         }]
+    ], [
+        'create table a if not exists (id number)',
+        [{
+            statement: 'CREATE',
+            what: 'TABLE',
+            schema: undefined,
+            table: 'a',
+            ifNotExists: true,
+            definitions: [ { type: 'DECIMAL', name: 'id' },
+                         ]
+        }]
     ]
   ], 'deepEqual'
 );

@@ -42,7 +42,7 @@ TABLE_PROPERTIES
       props.comment = comment;
       return props;
     }
-  / "IF"i _ "NOT"i _ "EXIST" "S"i? _ props:TABLE_PROPERTIES {
+  / "IF"i _ "NOT"i _ "EXIST"i "S"i? _ props:TABLE_PROPERTIES {
       props.ifNotExists = true;
       return props;
     }
