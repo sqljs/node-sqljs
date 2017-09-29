@@ -300,6 +300,15 @@ exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null,
             definitions: [ { type: 'DECIMAL', name: 'id' },
                          ]
         }]
+    ], [
+        'create table a (d TIMESTAMP DEFAULT now())',
+        [{
+            statement: 'CREATE',
+            what: 'TABLE',
+            schema: undefined,
+            table: 'a',
+            definitions: [ { type: 'TIMESTAMP', name: 'd', default: 'CURRENT_TIMESTAMP' }, ]
+        }]
     ]
   ], 'deepEqual'
 );

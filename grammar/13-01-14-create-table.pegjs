@@ -324,11 +324,10 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       return props;
     }
   / _ "DEFAULT"i __ value:CONSTANT_EXPRESSION props:COLUMN_TYPE_PROPERTIES {
+      if (value.toSql) { // @@@ FIXME. much ad-hock
+        value = value.toSql()
+      }
       props.default = value;
-      return props;
-    }
-  / _ "DEFAULT"i __ CURRENT_TIMESTAMP props:COLUMN_TYPE_PROPERTIES {
-      props.default = 'CURRENT_TIMESTAMP';
       return props;
     }
   / _ "ON"i _ "UPDATE"i _ val:CURRENT_TIMESTAMP _ props:COLUMN_TYPE_PROPERTIES {
