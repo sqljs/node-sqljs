@@ -42,7 +42,7 @@ TABLE_PROPERTIES
       props.comment = comment;
       return props;
     }
-  / "IF"i _ "NOT"i _ "EXIST" "S"i? _ props:TABLE_PROPERTIES {
+  / "IF"i _ "NOT"i _ "EXIST"i "S"i? _ props:TABLE_PROPERTIES {
       props.ifNotExists = true;
       return props;
     }
@@ -94,9 +94,13 @@ CREATE_DEFINITION_CONSTRAINT
         references: ref
       };
     }
-  / "UNIQUE"i __ type:("KEY"i/"INDEX"i)?
-      name:(__ name:(ID/STRING) {return name;})? _ "(" _ idlist:ID_LIST ")" _
+  / "UNIQUE"i _ type:("KEY"i/"INDEX"i)?
+      name:(_ name:(ID/STRING) {return name;})? _ "(" _ idlist:INDEX_COL_NAME_LIST ")" _
     {
+      if(!key && name && name.match(/KEY|INDEX/i)) {
+        key = name
+        name = undefined
+      }
       var key = {
         type: "CONSTRAINT",
         constraint: (type ? type.toUpperCase() : 'INDEX'),
@@ -108,7 +112,7 @@ CREATE_DEFINITION_CONSTRAINT
       return key;
     }
   / unique:("UNIQUE"i __)? type:("KEY"i/"INDEX"i)
-      name:(__ name:(ID/STRING) {return name;})? _ "(" _ idlist:ID_LIST ")" _
+      name:(__ name:(ID/STRING) {return name;})? _ "(" _ idlist:INDEX_COL_NAME_LIST ")" _
     {
       var key = {
         type: "CONSTRAINT",
@@ -147,6 +151,19 @@ ID_LIST
 
 STRING_ID_LIST
   = id:(STRING/ID) _ rest:(',' _ id2:(STRING/ID) _ { return id2; })* { rest.unshift(id); return rest; }
+
+INDEX_COL_NAME_LIST
+  = index_col_name:INDEX_COL_NAME _ rest:(',' _ index_col_name2:INDEX_COL_NAME _ { return index_col_name2; })* { rest.unshift(index_col_name); return rest; }
+
+INDEX_COL_NAME
+  = id:ID length:TYPE_LENGTH {
+    var key = {
+      id: id,
+    }
+    if(length)
+      key.length = length
+    return key
+  }
 
 
 NUMERIC_TYPE_LENGTH
@@ -206,6 +223,13 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       if(length) props.length = length;
       return props;
     }
+  / _ ("VARBINARY"i/"VARCHAR"i) length:TYPE_LENGTH _ "BINARY"i _ props:COLUMN_TYPE_PROPERTIES {
+      if(props.type)
+        throw new SyntaxError("Ambiguous type");
+      props.type = 'VARBINARY';
+      if(length) props.length = length;
+      return props;
+    }
   / _ ("VARCHAR"i/"CHARACTER"i __ "VARYING"i) length:TYPE_LENGTH props:COLUMN_TYPE_PROPERTIES {
       if(props.type)
         throw new SyntaxError("Ambiguous type");
@@ -241,10 +265,23 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       if(length) props.length = length;
       return props;
     }
+  / _ "BOOLEAN"i _ props:COLUMN_TYPE_PROPERTIES {
+      if(props.type)
+        throw new SyntaxError("Ambiguous type");
+      props.type = 'BOOLEAN';
+      return props;
+    }
   / _ "ENUM"i _ "(" values:STRING_ID_LIST ")" _ props:COLUMN_TYPE_PROPERTIES {
       if(props.type)
         throw new SyntaxError("Ambiguous type");
       props.type = 'ENUM';
+      props.values = values;
+      return props;
+    }
+  / _ "SET"i _ "(" values:STRING_ID_LIST ")" _ props:COLUMN_TYPE_PROPERTIES {
+      if(props.type)
+        throw new SyntaxError("Ambiguous type");
+      props.type = 'SET';
       props.values = values;
       return props;
     }
@@ -287,11 +324,10 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       return props;
     }
   / _ "DEFAULT"i __ value:CONSTANT_EXPRESSION props:COLUMN_TYPE_PROPERTIES {
+      if (value.toSql) { // @@@ FIXME. much ad-hock
+        value = value.toSql()
+      }
       props.default = value;
-      return props;
-    }
-  / _ "DEFAULT"i __ CURRENT_TIMESTAMP props:COLUMN_TYPE_PROPERTIES {
-      props.default = 'CURRENT_TIMESTAMP';
       return props;
     }
   / _ "ON"i _ "UPDATE"i _ val:CURRENT_TIMESTAMP _ props:COLUMN_TYPE_PROPERTIES {
@@ -303,4 +339,3 @@ COLUMN_TYPE_PROPERTIES "Column type properties"
       return props;
     }
   / _ { return {}; }
-

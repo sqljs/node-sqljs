@@ -226,6 +226,89 @@ exports['Grammar: CREATE TABLE: valid input'] = rule_yields.bind(null,
     ], [
       'CREATE TABLE "a b c" ("x y z" integer)',
       result9
+    ], [
+        'CREATE TABLE a (id integer, UNIQUE(id))',
+        [{
+            statement: 'CREATE',
+            what: 'TABLE',
+            schema: undefined,
+            table: 'a',
+            definitions: [ { type: 'INT', name: 'id' },
+                           { type: 'CONSTRAINT', constraint: 'INDEX', unique: true, columns: [ {id: 'id'} ] },
+                         ]
+        }]
+    ], [
+        'CREATE TABLE a (id integer, UNIQUE INDEX(id))',
+        [{
+            statement: 'CREATE',
+            what: 'TABLE',
+            schema: undefined,
+            table: 'a',
+            definitions: [ { type: 'INT', name: 'id' },
+                           { type: 'CONSTRAINT', constraint: 'INDEX', unique: true, columns: [ {id: 'id'} ] },
+                         ]
+        }]
+    ], [
+        'CREATE TABLE a (name varchar(255), UNIQUE INDEX(name(10)))',
+        [{
+            statement: 'CREATE',
+            what: 'TABLE',
+            schema: undefined,
+            table: 'a',
+            definitions: [ { type: 'VARCHAR', name: 'name', length: 255 },
+                           { type: 'CONSTRAINT', constraint: 'INDEX', unique: true, columns: [ {id: 'name', length: 10, } ] },
+                         ]
+        }]
+    ], [
+        'CREATE TABLE a (opts SET("blue", "red", "yellow"))',
+        [{
+            statement: 'CREATE',
+            what: 'TABLE',
+            schema: undefined,
+            table: 'a',
+            definitions: [ { type: 'SET', name: 'opts', values: [ 'blue', 'red', 'yellow', ] },
+                         ]
+        }]
+    ], [
+        'CREATE TABLE a (name VARCHAR(255) BINARY NOT NULL)',
+        [{
+            statement: 'CREATE',
+            what: 'TABLE',
+            schema: undefined,
+            table: 'a',
+            definitions: [ { type: 'VARBINARY', name: 'name', length: 255, notNull: true },
+                         ]
+        }]
+    ], [
+        'CREATE TABLE a (flag BOOLEAN NOT NULL DEFAULT TRUE)',
+        [{
+            statement: 'CREATE',
+            what: 'TABLE',
+            schema: undefined,
+            table: 'a',
+            definitions: [ { type: 'BOOLEAN', name: 'flag', default: true, notNull: true },
+                         ]
+        }]
+    ], [
+        'create table a if not exists (id number)',
+        [{
+            statement: 'CREATE',
+            what: 'TABLE',
+            schema: undefined,
+            table: 'a',
+            ifNotExists: true,
+            definitions: [ { type: 'DECIMAL', name: 'id' },
+                         ]
+        }]
+    ], [
+        'create table a (d TIMESTAMP DEFAULT now())',
+        [{
+            statement: 'CREATE',
+            what: 'TABLE',
+            schema: undefined,
+            table: 'a',
+            definitions: [ { type: 'TIMESTAMP', name: 'd', default: 'CURRENT_TIMESTAMP' }, ]
+        }]
     ]
   ], 'deepEqual'
 );
